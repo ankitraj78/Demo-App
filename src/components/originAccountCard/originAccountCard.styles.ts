@@ -1,0 +1,106 @@
+import {StyleSheet} from 'react-native';
+import {
+  colors,
+  spacing,
+  fontSize,
+  fontWeight,
+  borderRadius,
+  shadows,
+} from '../../../theme';
+
+export const styles = StyleSheet.create({
+  sectionLabel: {
+    fontSize: fontSize['2xs'],
+    fontWeight: fontWeight.semibold,
+    color: colors.slate400,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: spacing.lg,
+  },
+  originCard: {
+    borderRadius: borderRadius.xl,
+    padding: spacing['2xl'],
+    overflow: 'hidden',
+    ...shadows.lg,
+  },
+  originCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing['2xl'] + spacing.md,
+    zIndex: 1,
+  },
+  originAccountType: {
+    fontSize: fontSize['2xs'],
+    fontWeight: fontWeight.medium,
+    color: colors.white80,
+  },
+  originAccountName: {
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    color: colors.white,
+    marginTop: spacing.xs,
+  },
+  originCardBody: {
+    zIndex: 1,
+    gap: spacing.xl,
+  },
+  originBalanceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+  },
+  originBalance: {
+    fontSize: fontSize['3xl'],
+    fontWeight: fontWeight.bold,
+    color: colors.white,
+    marginTop: spacing.xs,
+  },
+  originStatusBadge: {
+    backgroundColor: colors.white20,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.sm,
+  },
+  originStatusText: {
+    fontSize: fontSize['2xs'],
+    fontWeight: fontWeight.bold,
+    color: colors.white,
+    letterSpacing: 1,
+  },
+  decorCircleLg: {
+    position: 'absolute',
+    right: -48,
+    bottom: -48,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: colors.cardOverlayLight,
+  },
+  decorCircleSm: {
+    position: 'absolute',
+    right: -16,
+    bottom: -16,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: colors.cardOverlay,
+  },
+  selectOtherBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.lg,
+    marginTop: spacing.xl,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.primaryBorderLight,
+    borderRadius: borderRadius.lg,
+  },
+  selectOtherText: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+    color: colors.primary,
+  },
+});

@@ -32,47 +32,34 @@ export const styles = StyleSheet.create({
     fontWeight: fontWeight.bold,
     color: colors.textPrimary,
   },
-  installmentGrid: {
-    flexDirection: 'row',
-    gap: spacing.xl,
-  },
-  installmentBox: {
-    flex: 1,
-    backgroundColor: colors.primaryBgLight,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-  },
-  installmentBoxLabel: {
-    fontSize: fontSize['2xs'],
-    fontWeight: fontWeight.bold,
-    color: colors.textMuted,
-    textTransform: 'uppercase',
-    marginBottom: spacing.sm,
-  },
-  installmentBoxValue: {
-    fontSize: fontSize.xl,
-    fontWeight: fontWeight.bold,
-    color: colors.textPrimary,
-  },
-  nextPaymentRow: {
+  detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: spacing.xl,
-    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.md,
   },
-  nextPaymentLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
+  detailRowBorder: {
+    borderTopWidth: 1,
+    borderTopColor: colors.borderLight,
+    paddingTop: spacing.lg,
   },
-  nextPaymentText: {
+  detailLabel: {
     fontSize: fontSize.md,
     color: colors.textMuted,
   },
-  nextPaymentValue: {
+  detailValue: {
     fontSize: fontSize.md,
     fontWeight: fontWeight.semibold,
     color: colors.textPrimary,
+  },
+  detailValueHighlight: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.primary,
+  },
+  detailValueDanger: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    color: colors.danger,
   },
 });

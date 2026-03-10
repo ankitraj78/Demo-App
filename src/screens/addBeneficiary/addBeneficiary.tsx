@@ -1,21 +1,16 @@
 import React, {useState} from 'react';
-import {
-  View,
-  ScrollView,
-  StatusBar,
-  Text,
-  TextInput,
-  TouchableOpacity,
-} from 'react-native';
+import {View, ScrollView, StatusBar} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
+import {colors, spacing} from '../../../theme';
 import {styles} from './addBeneficiary.styles';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
 import type {DropdownOption} from '../../components/dropdownSelect/dropdownSelect';
 import StickyFooter from '../../components/stickyFooter/stickyFooter';
+import QrBanner from '../../components/qrBanner/qrBanner';
+import FormTextField from '../../components/formTextField/formTextField';
+import FormAmountField from '../../components/formAmountField/formAmountField';
 
 const accountTypeOptions: DropdownOption[] = [
   {label: 'Savings Account', value: 'savings'},
@@ -59,55 +54,25 @@ export default function AddBeneficiaryScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
         {/* QR Quick Setup Banner */}
-        <View style={styles.qrBanner}>
-          <View style={styles.qrBannerLeft}>
-            <View style={styles.qrIconBox}>
-              <MaterialIcons
-                name="qr-code-scanner"
-                size={iconSize.xl}
-                color={colors.white}
-              />
-            </View>
-            <View>
-              <Text style={styles.qrTitle}>Quick Setup</Text>
-              <Text style={styles.qrSubtitle}>
-                Scan code to auto-fill details
-              </Text>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.qrButton} activeOpacity={0.85}>
-            <Text style={styles.qrButtonText}>Upload QR</Text>
-          </TouchableOpacity>
-        </View>
+        <QrBanner />
 
         {/* Form Fields */}
         <View style={styles.formSection}>
-          {/* Beneficiary Name */}
-          <View style={styles.fieldWrapper}>
-            <Text style={styles.fieldLabel}>Beneficiary Name</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="e.g. Johnathan Smith"
-              placeholderTextColor={colors.textMuted}
-              value={beneficiaryName}
-              onChangeText={setBeneficiaryName}
-            />
-          </View>
+          <FormTextField
+            label="Beneficiary Name"
+            placeholder="e.g. Johnathan Smith"
+            value={beneficiaryName}
+            onChangeText={setBeneficiaryName}
+          />
 
-          {/* Account Number */}
-          <View style={styles.fieldWrapper}>
-            <Text style={styles.fieldLabel}>Account Number</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter 10-12 digit number"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="number-pad"
-              value={accountNumber}
-              onChangeText={setAccountNumber}
-            />
-          </View>
+          <FormTextField
+            label="Account Number"
+            placeholder="Enter 10-12 digit number"
+            value={accountNumber}
+            onChangeText={setAccountNumber}
+            keyboardType="number-pad"
+          />
 
-          {/* Account Type */}
           <DropdownSelect
             fieldLabel="Account Type"
             options={accountTypeOptions}
@@ -120,36 +85,19 @@ export default function AddBeneficiaryScreen() {
             onSelect={handleSelectAccountType}
           />
 
-          {/* Office / Branch Name */}
-          <View style={styles.fieldWrapper}>
-            <Text style={styles.fieldLabel}>Office / Branch Name</Text>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Enter branch location"
-              placeholderTextColor={colors.textMuted}
-              value={branchName}
-              onChangeText={setBranchName}
-            />
-          </View>
+          <FormTextField
+            label="Office / Branch Name"
+            placeholder="Enter branch location"
+            value={branchName}
+            onChangeText={setBranchName}
+          />
 
-          {/* Transfer Limit */}
-          <View style={styles.fieldWrapper}>
-            <Text style={styles.fieldLabel}>Transfer Limit (Daily)</Text>
-            <View style={styles.amountInputContainer}>
-              <Text style={styles.currencySymbol}>$</Text>
-              <TextInput
-                style={styles.amountInput}
-                placeholder="0.00"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="decimal-pad"
-                value={transferLimit}
-                onChangeText={setTransferLimit}
-              />
-            </View>
-            <Text style={styles.helperText}>
-              Maximum allowed limit is $50,000.00
-            </Text>
-          </View>
+          <FormAmountField
+            label="Transfer Limit (Daily)"
+            value={transferLimit}
+            onChangeText={setTransferLimit}
+            helperText="Maximum allowed limit is $50,000.00"
+          />
         </View>
       </ScrollView>
 

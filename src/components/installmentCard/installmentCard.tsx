@@ -4,49 +4,62 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {colors, iconSize} from '../../../theme';
 import {styles} from './installmentCard.styles';
 
-type InfoItem = {
+type GridItem = {
   label: string;
   value: string;
-  highlight?: boolean;
+};
+
+type NextPayment = {
+  iconName: string;
+  label: string;
+  value: string;
 };
 
 type InstallmentCardProps = {
   iconName: string;
   title: string;
-  items: InfoItem[];
+  items: GridItem[];
+  nextPayment?: NextPayment;
 };
 
 export default function InstallmentCard({
   iconName,
   title,
   items,
+  nextPayment,
 }: InstallmentCardProps) {
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.card}>
-        <View style={styles.header}>
-          <View style={styles.iconBox}>
-            <MaterialIcons
-              name={iconName}
-              size={iconSize.xl}
-              color={colors.primary}
-            />
-          </View>
-          <Text style={styles.title}>{title}</Text>
+    <View style={styles.sectionWrapper}>
+      <View style={styles.sectionCard}>
+        <View style={styles.sectionHeader}>
+          <MaterialIcons
+            name={iconName}
+            size={iconSize.xl}
+            color={colors.primary}
+          />
+          <Text style={styles.sectionTitle}>{title}</Text>
         </View>
-        <View style={styles.grid}>
+        <View style={styles.installmentGrid}>
           {items.map(item => (
-            <View key={item.label} style={styles.box}>
-              <Text style={styles.boxLabel}>{item.label}</Text>
-              <Text
-                style={
-                  item.highlight ? styles.boxPrimaryValue : styles.boxDefaultValue
-                }>
-                {item.value}
-              </Text>
+            <View key={item.label} style={styles.installmentBox}>
+              <Text style={styles.installmentBoxLabel}>{item.label}</Text>
+              <Text style={styles.installmentBoxValue}>{item.value}</Text>
             </View>
           ))}
         </View>
+        {nextPayment && (
+          <View style={styles.nextPaymentRow}>
+            <View style={styles.nextPaymentLabel}>
+              <MaterialIcons
+                name={nextPayment.iconName}
+                size={iconSize.sm}
+                color={colors.textMuted}
+              />
+              <Text style={styles.nextPaymentText}>{nextPayment.label}</Text>
+            </View>
+            <Text style={styles.nextPaymentValue}>{nextPayment.value}</Text>
+          </View>
+        )}
       </View>
     </View>
   );

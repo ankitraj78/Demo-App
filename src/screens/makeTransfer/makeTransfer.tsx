@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, StatusBar, TouchableOpacity} from 'react-native';
+import {View, ScrollView, StatusBar} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
+import {colors, spacing} from '../../../theme';
 import {styles} from './makeTransfer.styles';
 import type {RootStackParamList} from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
@@ -12,6 +11,9 @@ import AmountInput from '../../components/amountInput/amountInput';
 import StickyFooter from '../../components/stickyFooter/stickyFooter';
 import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
 import type {DropdownOption} from '../../components/dropdownSelect/dropdownSelect';
+import OriginAccountCard from '../../components/originAccountCard/originAccountCard';
+import SectionHeader from '../../components/sectionHeader/sectionHeader';
+import TransactionSummary from '../../components/transactionSummary/transactionSummary';
 
 const beneficiaryOptions: DropdownOption[] = [
   {label: 'Savings Account', value: '0000000007'},
@@ -61,70 +63,23 @@ export default function MakeTransferScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
         {/* Origin Account Section */}
-        <View>
-          <Text style={styles.sectionLabel}>Origin Account</Text>
-          <View
-            style={[styles.originCard, {backgroundColor: colors.primary}]}>
-            <View style={styles.originCardHeader}>
-              <View>
-                <Text style={styles.originAccountType}>Savings Account</Text>
-                <Text style={styles.originAccountName}>ankit kumar abc</Text>
-              </View>
-              <MaterialIcons
-                name="contactless"
-                size={iconSize['2xl']}
-                color={colors.white60}
-              />
-            </View>
-
-            <View style={styles.originCardBody}>
-              <View>
-                <Text style={styles.originFieldLabel}>Account Number</Text>
-                <Text style={styles.originAccountNumber}>0000000009</Text>
-              </View>
-
-              <View style={styles.originBalanceRow}>
-                <View>
-                  <Text style={styles.originFieldLabel}>Available Balance</Text>
-                  <Text style={styles.originBalance}>$ 499.98</Text>
-                </View>
-                <View style={styles.originStatusBadge}>
-                  <Text style={styles.originStatusText}>ACTIVE</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.decorCircleLg} />
-            <View style={styles.decorCircleSm} />
-          </View>
-
-          <TouchableOpacity style={styles.selectOtherBtn} activeOpacity={0.7}>
-            <MaterialIcons
-              name="swap-horiz"
-              size={iconSize.md}
-              color={colors.primary}
-            />
-            <Text style={styles.selectOtherText}>
-              Select Other Payment Account
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <OriginAccountCard
+          label="Origin Account"
+          accountType="Savings Account"
+          accountName="ankit kumar abc"
+          accountNumber="0000000009"
+          balance="$ 499.98"
+          status="ACTIVE"
+          onSelectOther={() => {}}
+        />
 
         {/* Destination Account Section */}
         <View>
-          <View style={styles.destinationHeader}>
-            <Text style={styles.sectionLabel}>Destination Account</Text>
-            <TouchableOpacity
-              style={styles.addBeneficiaryBtn}
-              activeOpacity={0.7}>
-              <MaterialIcons
-                name="person-add"
-                size={iconSize.sm}
-                color={colors.primary}
-              />
-              <Text style={styles.addBeneficiaryText}>Add Beneficiary!</Text>
-            </TouchableOpacity>
-          </View>
+          <SectionHeader
+            title="Destination Account"
+            actionLabel="Add Beneficiary!"
+            actionIcon="person-add"
+          />
 
           <DropdownSelect
             fieldLabel="Account Number"
@@ -150,16 +105,12 @@ export default function MakeTransferScreen() {
         />
 
         {/* Transaction Summary */}
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Transaction Fee</Text>
-            <Text style={styles.summaryValue}>Free</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Estimated Arrival</Text>
-            <Text style={styles.summaryValue}>Instant</Text>
-          </View>
-        </View>
+        <TransactionSummary
+          rows={[
+            {label: 'Transaction Fee', value: 'Free'},
+            {label: 'Estimated Arrival', value: 'Instant'},
+          ]}
+        />
       </ScrollView>
 
       {/* Footer */}
