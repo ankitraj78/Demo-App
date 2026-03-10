@@ -1,23 +1,18 @@
 import React from 'react';
-import {View, Text, ScrollView, TouchableOpacity, StatusBar} from 'react-native';
+import {View, ScrollView, StatusBar} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
+import {colors, spacing} from '../../../theme';
 import {styles} from './loanDetails.styles';
 import type {RootStackParamList} from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
+import type {ActionItem} from '../../components/actionCard/actionCard';
+import ActionsSection from '../../components/actionsSection/actionsSection';
+import HeroCard from '../../components/heroCard/heroCard';
+import InstallmentCard from '../../components/installmentCard/installmentCard';
 
 type LoanDetailsRouteProp = RouteProp<RootStackParamList, 'LoanDetails'>;
-
-type ActionItem = {
-  icon: string;
-  title: string;
-  subtitle: string;
-  iconColor: string;
-  iconBg: string;
-};
 
 const actions: ActionItem[] = [
   {
@@ -64,21 +59,6 @@ const actions: ActionItem[] = [
   },
 ];
 
-function ActionCard({item, onPress}: {item: ActionItem; onPress?: () => void}) {
-  return (
-    <TouchableOpacity style={styles.actionItem} onPress={onPress}>
-      <View style={[styles.actionIconBox, {backgroundColor: item.iconBg}]}>
-        <MaterialIcons name={item.icon} size={iconSize.xl} color={item.iconColor} />
-      </View>
-      <View style={styles.actionTextBox}>
-        <Text style={styles.actionTitle}>{item.title}</Text>
-        <Text style={styles.actionSubtitle}>{item.subtitle}</Text>
-      </View>
-      <MaterialIcons name="chevron-right" size={iconSize.xl} color={colors.slate200} />
-    </TouchableOpacity>
-  );
-}
-
 export default function LoanDetailsScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
@@ -97,75 +77,51 @@ export default function LoanDetailsScreen() {
         contentContainerStyle={{paddingBottom: insets.bottom + spacing.xl}}>
 
         {/* Hero Card */}
-        <View style={styles.heroWrapper}>
-          <View style={styles.heroCard}>
-            <View style={styles.heroWatermark}>
-              <MaterialIcons name="account-balance-wallet" size={64} color={colors.white} />
-            </View>
-            <View style={styles.heroContent}>
-              <View style={styles.heroTopRow}>
-                <View>
-                  <Text style={styles.heroAccountLabel}>Account Number</Text>
-                  <Text style={styles.heroAccountNumber}>{accountNumber}</Text>
-                </View>
-                <View style={styles.heroTypeBadge}>
-                  <Text style={styles.heroTypeText}>{name}</Text>
-                </View>
-              </View>
-              <View style={styles.heroBalanceSection}>
-                <Text style={styles.heroBalanceLabel}>Outstanding Balance</Text>
-                <View style={styles.heroBalanceRow}>
-                  <Text style={styles.heroBalanceAmount}>{balance}</Text>
-                  <Text style={styles.heroBalanceCurrency}>USD</Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        </View>
+        <HeroCard
+          accountNumber={accountNumber}
+          name={name}
+          balanceLabel="Outstanding Balance"
+          balance={balance}
+          currency="USD"
+        />
 
         {/* Next Installment */}
-        <View style={styles.installmentWrapper}>
-          <View style={styles.installmentCard}>
-            <View style={styles.installmentHeader}>
-              <View style={styles.installmentIconBox}>
-                <MaterialIcons name="event-repeat" size={iconSize.xl} color={colors.primary} />
-              </View>
-              <Text style={styles.installmentTitle}>Next Installment</Text>
-            </View>
-            <View style={styles.installmentGrid}>
-              <View style={styles.installmentBox}>
-                <Text style={styles.installmentBoxLabel}>Amount Due</Text>
-                <Text style={styles.installmentBoxAmount}>$1,000.00</Text>
-              </View>
-              <View style={styles.installmentBox}>
-                <Text style={styles.installmentBoxLabel}>Due Date</Text>
-                <Text style={styles.installmentBoxDate}>9 Mar 2026</Text>
-              </View>
-            </View>
-          </View>
-        </View>
+        <InstallmentCard
+          iconName="event-repeat"
+          title="Next Installment"
+          items={[
+            {label: 'Amount Due', value: '$1,000.00', highlight: true},
+            {label: 'Due Date', value: '9 Mar 2026'},
+          ]}
+        />
 
         {/* Actions */}
-        <View style={styles.actionsWrapper}>
-          <Text style={styles.actionsTitle}>Actions & Information</Text>
-          <View style={styles.actionsList}>
-            {actions.map(item => (
-              <ActionCard
-                key={item.title}
-                item={item}
-                onPress={
-                  item.title === 'Make Payment'
-                    ? () =>
-                        navigation.navigate('MakePayment', {
-                          loanName: name,
-                          loanAccountNumber: accountNumber,
-                        })
-                    : undefined
-                }
-              />
-            ))}
-          </View>
-        </View>
+        <ActionsSection
+          title="Actions & Information"
+          actions={actions}
+          onActionPress={item => {
+            if (item.title === 'Make Payment') {
+              navigation.navigate('MakePayment', {
+                loanName: name,
+                loanAccountNumber: accountNumber,
+              });
+            } else if (item.title === 'Loan Summary') {
+              navigation.navigate('LoanSummary', {
+                loanName: name,
+                loanAccountNumber: accountNumber,
+              });
+            } else if (item.title === 'Transactions') {
+              navigation.navigate('TransactionHistory');
+            } else if (item.title === 'Repayment Schedule') {
+              navigation.navigate('RepaymentSchedule', {
+                accountNumber,
+                name,
+              });
+            } else if (item.title === 'QR Code') {
+              navigation.navigate('QrCode');
+            }
+          }}
+        />
       </ScrollView>
     </View>
   );

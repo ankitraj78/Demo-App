@@ -5,6 +5,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {colors, spacing, fontSize, fontWeight, iconSize, shadows} from '../../theme';
 import HomeScreen from '../screens/homeScreen/homeScreen';
+import TransactionHistoryScreen from '../screens/transactionHistory/transactionHistory';
 
 export type TabParamList = {
   Home: undefined;
@@ -87,7 +88,7 @@ export default function TabNavigator() {
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{headerShown: false}}>
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="History" component={PlaceholderScreen} />
+      <Tab.Screen name="History" component={TransactionHistoryScreen} />
       <Tab.Screen name="Scan" component={PlaceholderScreen} />
       <Tab.Screen name="Cards" component={PlaceholderScreen} />
       <Tab.Screen name="More" component={PlaceholderScreen} />

@@ -1,29 +1,26 @@
 import React, {useState} from 'react';
 import {
   View,
-  Text,
   ScrollView,
-  TouchableOpacity,
-  TextInput,
   StatusBar,
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
+import {colors, spacing} from '../../../theme';
 import {styles} from './makePayment.styles';
 import type {RootStackParamList} from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
+import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
+import type {DropdownOption} from '../../components/dropdownSelect/dropdownSelect';
+import PayFromCard from '../../components/payFromCard/payFromCard';
+import AmountInput from '../../components/amountInput/amountInput';
+import StickyFooter from '../../components/stickyFooter/stickyFooter';
+import QuickSelectGrid from '../../components/quickSelectGrid/quickSelectGrid';
 
 type MakePaymentRouteProp = RouteProp<RootStackParamList, 'MakePayment'>;
 
-type LoanOption = {
-  label: string;
-  value: string;
-};
-
-const loanOptions: LoanOption[] = [
+const loanOptions: DropdownOption[] = [
   {label: 'Personal Loan', value: '000000001'},
   {label: 'Home Loan', value: '000000002'},
   {label: 'Car Loan', value: '000000003'},
@@ -86,172 +83,51 @@ export default function MakePaymentScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
         {/* Pay To Section */}
-        <View>
-          <Text style={styles.sectionLabel}>Pay To</Text>
-          <Text style={styles.fieldLabel}>Loan Account</Text>
-          <TouchableOpacity
-            style={styles.selectContainer}
-            onPress={() => setShowDropdown(!showDropdown)}>
-            <Text style={styles.selectText}>
-              {selectedLoanLabel} ({selectedLoan})
-            </Text>
-            <MaterialIcons
-              name="expand-more"
-              size={iconSize.xl}
-              color={colors.textMuted}
-            />
-          </TouchableOpacity>
-
-          {/* Dropdown */}
-          {showDropdown && (
-            <View
-              style={{
-                marginTop: spacing.sm,
-                backgroundColor: colors.white,
-                borderRadius: 16,
-                borderWidth: 1,
-                borderColor: colors.border,
-                overflow: 'hidden',
-              }}>
-              {loanOptions.map(option => (
-                <TouchableOpacity
-                  key={option.value}
-                  style={{
-                    paddingHorizontal: spacing.xl,
-                    paddingVertical: spacing.lg + spacing.xs,
-                    backgroundColor:
-                      selectedLoan === option.value
-                        ? colors.primaryBgLight
-                        : colors.white,
-                    borderBottomWidth: 1,
-                    borderBottomColor: colors.borderLight,
-                  }}
-                  onPress={() => selectLoan(option.value)}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: selectedLoan === option.value ? '600' : '400',
-                      color:
-                        selectedLoan === option.value
-                          ? colors.primary
-                          : colors.textPrimary,
-                    }}>
-                    {option.label} ({option.value})
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
+        <DropdownSelect
+          sectionLabel="Pay To"
+          fieldLabel="Loan Account"
+          options={loanOptions}
+          selectedValue={selectedLoan}
+          displayText={`${selectedLoanLabel} (${selectedLoan})`}
+          isOpen={showDropdown}
+          onToggle={() => setShowDropdown(!showDropdown)}
+          onSelect={selectLoan}
+        />
 
         {/* Pay From Section */}
-        <View>
-          <Text style={styles.sectionLabel}>Pay From</Text>
-          <View style={[styles.payFromCard, {backgroundColor: colors.primary}]}>
-            <View style={styles.payFromContent}>
-              <View style={styles.payFromLeftSection}>
-                <View>
-                  <Text style={styles.payFromTypeLabel}>Savings Account</Text>
-                  <Text style={styles.payFromAccountNumber}>
-                    **** **** **** 1234
-                  </Text>
-                </View>
-                <View>
-                  <Text style={styles.payFromBalanceLabel}>
-                    Current Balance
-                  </Text>
-                  <Text style={styles.payFromBalance}>$12,450.00</Text>
-                </View>
-              </View>
-              <View style={styles.payFromIconBox}>
-                <MaterialIcons
-                  name="credit-card"
-                  size={iconSize.xl}
-                  color={colors.white80}
-                />
-              </View>
-            </View>
-            <View style={styles.decorCircle1} />
-            <View style={styles.decorCircle2} />
-          </View>
-        </View>
+        <PayFromCard
+          label="Pay From"
+          accountType="Savings Account"
+          accountNumber="**** **** **** 1234"
+          balanceLabel="Current Balance"
+          balance="$12,450.00"
+        />
 
         {/* Amount Section */}
-        <View style={styles.amountSection}>
-          <View style={styles.amountFieldWrapper}>
-            <Text style={styles.amountLabel}>Amount</Text>
-            <View style={styles.amountInputContainer}>
-              <Text style={styles.amountCurrency}>$</Text>
-              <TextInput
-                style={styles.amountInput}
-                placeholder="0.00"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="numeric"
-                value={amount}
-                onChangeText={handleAmountChange}
-              />
-            </View>
-          </View>
-
-          <View style={styles.amountFieldWrapper}>
-            <Text style={styles.amountLabel}>Remarks (Optional)</Text>
-            <TextInput
-              style={styles.remarksInput}
-              placeholder="What is this for?"
-              placeholderTextColor={colors.textMuted}
-              multiline
-              numberOfLines={2}
-              value={remarks}
-              onChangeText={setRemarks}
-            />
-          </View>
-        </View>
+        <AmountInput
+          amount={amount}
+          onAmountChange={handleAmountChange}
+          remarks={remarks}
+          onRemarksChange={setRemarks}
+        />
 
         {/* Quick Select */}
-        <View>
-          <Text style={styles.sectionLabel}>Quick Select</Text>
-          <View style={styles.quickSelectGrid}>
-            {quickAmounts.map(val => {
-              const isActive = selectedQuick === val;
-              return (
-                <TouchableOpacity
-                  key={val}
-                  style={[
-                    styles.quickSelectBtn,
-                    isActive && styles.quickSelectBtnActive,
-                  ]}
-                  onPress={() => handleQuickSelect(val)}>
-                  <Text
-                    style={[
-                      styles.quickSelectText,
-                      isActive && styles.quickSelectTextActive,
-                    ]}>
-                    ${val}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
+        <QuickSelectGrid
+          label="Quick Select"
+          values={quickAmounts}
+          selectedValue={selectedQuick}
+          onSelect={handleQuickSelect}
+        />
       </ScrollView>
 
       {/* Footer */}
-      <View style={[styles.footer, {paddingBottom: insets.bottom + spacing.xl}]}>
-        <TouchableOpacity
-          style={styles.payButton}
-          activeOpacity={0.85}
-          onPress={() => navigation.navigate('ConfirmTransfer')}>
-          <Text style={styles.payButtonText}>Make Payment</Text>
-          <MaterialIcons
-            name="arrow-forward"
-            size={iconSize.lg}
-            color={colors.white}
-          />
-        </TouchableOpacity>
-        <Text style={styles.footerNote}>
-          Payments made after 8 PM will be processed next business day.
-        </Text>
-      </View>
+      <StickyFooter
+        buttonLabel="Make Payment"
+        iconName="arrow-forward"
+        note="Payments made after 8 PM will be processed next business day."
+        onPress={() => navigation.navigate('ConfirmTransfer')}
+        paddingBottom={insets.bottom + spacing.xl}
+      />
     </View>
   );
 }
