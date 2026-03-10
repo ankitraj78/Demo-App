@@ -226,4 +226,21 @@ export const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: spacing.xs,
   },
+
+  // Loading & Error states
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xl,
+    gap: spacing.md,
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
+  errorText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+  },
 });

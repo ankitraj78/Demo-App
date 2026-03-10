@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ScrollView, StatusBar} from 'react-native';
+import {View, ScrollView, StatusBar, ActivityIndicator, Text} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -11,8 +11,26 @@ import type {ActionItem} from '../../components/actionCard/actionCard';
 import ActionsSection from '../../components/actionsSection/actionsSection';
 import HeroCard from '../../components/heroCard/heroCard';
 import InstallmentCard from '../../components/installmentCard/installmentCard';
+import {useLoanDetails} from '../../api/useLoanDetails';
 
 type LoanDetailsRouteProp = RouteProp<RootStackParamList, 'LoanDetails'>;
+
+function formatDateFromArray(dateArr?: number[]): string {
+  if (!dateArr || dateArr.length < 3) {return 'N/A';}
+  const [year, month, day] = dateArr;
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function formatAmount(amount?: number, symbol?: string): string {
+  if (amount == null) {return 'N/A';}
+  const sym = symbol ?? '$';
+  return `${sym}${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+}
 
 const actions: ActionItem[] = [
   {
@@ -64,7 +82,19 @@ export default function LoanDetailsScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<LoanDetailsRouteProp>();
-  const {name, accountNumber, balance} = route.params;
+  const {loanId, name, accountNumber, balance} = route.params;
+
+  const {loanDetails, loading, error} = useLoanDetails(loanId);
+
+  const firstTransaction = loanDetails?.transactions?.[0];
+  const currencySymbol = loanDetails?.currency?.displaySymbol ?? '$';
+
+  const installmentAmount = firstTransaction
+    ? formatAmount(firstTransaction.amount, currencySymbol)
+    : null;
+  const installmentDueDate = firstTransaction
+    ? formatDateFromArray(firstTransaction.submittedOnDate)
+    : null;
 
   return (
     <View style={styles.root}>
@@ -86,14 +116,25 @@ export default function LoanDetailsScreen() {
         />
 
         {/* Next Installment */}
-        <InstallmentCard
-          iconName="event-repeat"
-          title="Next Installment"
-          items={[
-            {label: 'Amount Due', value: '$1,000.00', highlight: true},
-            {label: 'Due Date', value: '9 Mar 2026'},
-          ]}
-        />
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color={colors.primary} />
+            <Text style={styles.loadingText}>Loading installment...</Text>
+          </View>
+        ) : error ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.errorText}>Could not load installment data</Text>
+          </View>
+        ) : installmentAmount && installmentDueDate ? (
+          <InstallmentCard
+            iconName="event-repeat"
+            title="Next Installment"
+            items={[
+              {label: 'Installment Amount', value: installmentAmount},
+              {label: 'Due Date', value: installmentDueDate},
+            ]}
+          />
+        ) : null}
 
         {/* Actions */}
         <ActionsSection

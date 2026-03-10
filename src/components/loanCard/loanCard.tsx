@@ -10,6 +10,7 @@ export type Loan = {
   icon: string;
   name: string;
   id: string;
+  loanId: number;
   status: LoanStatus;
   statusLabel: string;
   amountLabel: string;

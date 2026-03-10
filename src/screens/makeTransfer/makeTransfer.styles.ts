@@ -72,4 +72,16 @@ export const styles = StyleSheet.create({
     marginLeft: spacing.lg,
   },
 
+  // Loading & Error states
+  centerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  errorText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
 });

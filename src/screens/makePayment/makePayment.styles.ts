@@ -252,4 +252,17 @@ export const styles = StyleSheet.create({
     color: colors.textMuted,
     marginTop: spacing.xl,
   },
+
+  // Loading & Error states
+  centerContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+  },
+  errorText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
 });

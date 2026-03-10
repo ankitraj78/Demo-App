@@ -272,4 +272,30 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.primaryBgLight,
     borderRadius: borderRadius.full,
   },
+
+  // Loading & Error States
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.lg,
+    padding: spacing.xl,
+  },
+  errorText: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.medium,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  retryBtn: {
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.md,
+  },
+  retryBtnText: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+    color: colors.white,
+  },
 });

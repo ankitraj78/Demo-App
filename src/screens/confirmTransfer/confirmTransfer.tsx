@@ -1,7 +1,7 @@
-import React from 'react';
-import {View, ScrollView, StatusBar} from 'react-native';
+import React, {useState} from 'react';
+import {View, ScrollView, StatusBar, ActivityIndicator, Alert, Text} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {colors, spacing} from '../../../theme';
 import {styles} from './confirmTransfer.styles';
@@ -11,10 +11,88 @@ import type {RootStackParamList} from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DetailsCard from '../../components/detailsCard/detailsCard';
 import PoweredByFooter from '../../components/poweredByFooter/poweredByFooter';
+import {makeThirdPartyTransfer} from '../../api/transferService';
+
+type ConfirmTransferRouteProp = RouteProp<RootStackParamList, 'ConfirmTransfer'>;
+
+function formatTransferDate(): string {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
+  ];
+  return `${day} ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
 
 export default function ConfirmTransferScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<ConfirmTransferRouteProp>();
+
+  if (!route.params) {
+    return (
+      <View style={styles.root}>
+        <ScreenHeader title="Confirm Transfer" />
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <Text style={{color: colors.textSecondary}}>
+            Transfer details not available.
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  const {
+    fromAccountName,
+    fromAccountNo,
+    fromOfficeId,
+    fromClientId,
+    fromAccountType,
+    toAccountName,
+    toAccountNo,
+    toOfficeId,
+    toClientId,
+    toAccountType,
+    amount,
+    remarks,
+  } = route.params;
+
+  const [submitting, setSubmitting] = useState(false);
+
+  const transferDate = formatTransferDate();
+
+  const handleConfirm = async () => {
+    setSubmitting(true);
+    try {
+      await makeThirdPartyTransfer({
+        fromOfficeId,
+        fromClientId,
+        fromAccountType,
+        fromAccountId: fromAccountNo,
+        toOfficeId,
+        toClientId,
+        toAccountType,
+        toAccountId: toAccountNo,
+        transferAmount: parseFloat(amount) || 0,
+        transferDescription: remarks || '',
+        transferDate,
+        dateFormat: 'dd MMMM yyyy',
+        locale: 'en',
+      });
+      navigation.navigate('TransactionAuth', {
+        amount: `$${parseFloat(amount).toFixed(2)}`,
+        recipientName: toAccountName,
+      });
+    } catch (err) {
+      Alert.alert(
+        'Transfer Failed',
+        err instanceof Error ? err.message : 'Something went wrong',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <View style={styles.root}>
@@ -33,38 +111,41 @@ export default function ConfirmTransferScreen() {
         <TransferAccountCard
           label="Pay From"
           iconName="account-balance-wallet"
-          name="John Doe"
-          accountDetail="Savings Account: 1234567890"
+          name={fromAccountName}
+          accountDetail={`Account: ${fromAccountNo}`}
         />
 
         {/* Pay To Section */}
         <TransferAccountCard
           label="Pay To"
           iconName="person"
-          name="Jane Smith"
-          accountDetail="Current Account: 0987654321"
+          name={toAccountName}
+          accountDetail={`Account: ${toAccountNo}`}
         />
 
         {/* Transfer Details Section */}
         <DetailsCard
           title="Transfer Details"
           rows={[
-            {label: 'Amount', value: '$1,250.00', highlight: true},
-            {label: 'Date', value: 'Oct 24, 2023'},
-            {label: 'Remark', value: 'Monthly rent payment - Oct', vertical: true},
+            {label: 'Amount', value: `$${parseFloat(amount).toFixed(2)}`, highlight: true},
+            {label: 'Date', value: transferDate},
+            ...(remarks
+              ? [{label: 'Remark', value: remarks, vertical: true}]
+              : []),
           ]}
         />
 
         {/* Action Buttons */}
-        <ActionButtons
-          confirmLabel="Confirm Transfer"
-          confirmIconName="send"
-          onConfirm={() => navigation.navigate('TransactionAuth', {
-            amount: '$1,250.00',
-            recipientName: 'Jane Smith',
-          })}
-          onCancel={() => navigation.goBack()}
-        />
+        {submitting ? (
+          <ActivityIndicator size="large" color={colors.primary} />
+        ) : (
+          <ActionButtons
+            confirmLabel="Confirm Transfer"
+            confirmIconName="send"
+            onConfirm={handleConfirm}
+            onCancel={() => navigation.goBack()}
+          />
+        )}
 
         <PoweredByFooter />
       </ScrollView>
