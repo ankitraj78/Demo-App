@@ -1,18 +1,22 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, Image} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './header.styles';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './header.styles';
 
 export default function Header() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.header, {paddingTop: insets.top + spacing.md}]}>
+    <View style={[styles.header, { paddingTop: insets.top + spacing.md }]}>
       <View style={styles.headerLeft}>
         <View style={styles.headerLogo}>
-          <MaterialIcons name="account-balance" size={iconSize.lg} color={colors.white} />
+          <MaterialIcons
+            name="account-balance"
+            size={iconSize.lg}
+            color={colors.white}
+          />
         </View>
         <View>
           <Text style={styles.headerWelcome}>Welcome back</Text>
@@ -21,7 +25,11 @@ export default function Header() {
       </View>
       <View style={styles.headerRight}>
         <TouchableOpacity style={styles.notifBtn}>
-          <MaterialIcons name="notifications" size={iconSize.xl} color={colors.textSecondary} />
+          <MaterialIcons
+            name="notifications"
+            size={iconSize.xl}
+            color={colors.textSecondary}
+          />
           <View style={styles.notifBadge} />
         </TouchableOpacity>
         <Image

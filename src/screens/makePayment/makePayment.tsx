@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -6,20 +6,20 @@ import {
   ActivityIndicator,
   Text,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {colors, spacing} from '../../../theme';
-import {styles} from './makePayment.styles';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { colors, spacing } from '../../theme';
+import { styles } from './makePayment.styles';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
-import type {DropdownOption} from '../../components/dropdownSelect/dropdownSelect';
+import type { DropdownOption } from '../../components/dropdownSelect/dropdownSelect';
 import PayFromCard from '../../components/payFromCard/payFromCard';
 import AmountInput from '../../components/amountInput/amountInput';
 import StickyFooter from '../../components/stickyFooter/stickyFooter';
 import QuickSelectGrid from '../../components/quickSelectGrid/quickSelectGrid';
-import {useTransferTemplate} from '../../api/useTransferTemplate';
+import { useTransferTemplate } from '../../hooks/useTransferTemplate';
 
 type MakePaymentRouteProp = RouteProp<RootStackParamList, 'MakePayment'>;
 
@@ -27,11 +27,12 @@ const quickAmounts = ['100', '500', '1,000'];
 
 export default function MakePaymentScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<MakePaymentRouteProp>();
-  const {loanName, loanAccountNumber} = route.params;
+  const { loanName, loanAccountNumber } = route.params;
 
-  const {fromAccounts, toAccounts, loading, error} = useTransferTemplate();
+  const { fromAccounts, toAccounts, loading, error } = useTransferTemplate();
 
   // "Pay To" = loan accounts from toAccountOptions
   const loanOptions: DropdownOption[] = useMemo(
@@ -52,7 +53,8 @@ export default function MakePaymentScreen() {
 
   // "Pay From" = savings accounts from fromAccountOptions
   const savingsAccounts = useMemo(
-    () => fromAccounts.filter(acc => acc.accountType?.value === 'Savings Account'),
+    () =>
+      fromAccounts.filter(acc => acc.accountType?.value === 'Savings Account'),
     [fromAccounts],
   );
   const fromAccount = savingsAccounts[0] ?? fromAccounts[0] ?? null;
@@ -63,7 +65,10 @@ export default function MakePaymentScreen() {
 
   // If the loanAccountNumber from route doesn't match any option, auto-select the first
   React.useEffect(() => {
-    if (loanOptions.length > 0 && !loanOptions.find(o => o.value === selectedLoan)) {
+    if (
+      loanOptions.length > 0 &&
+      !loanOptions.find(o => o.value === selectedLoan)
+    ) {
       setSelectedLoan(loanOptions[0].value);
     }
   }, [loanOptions, selectedLoan]);
@@ -95,7 +100,9 @@ export default function MakePaymentScreen() {
   };
 
   const handleMakePayment = () => {
-    if (!fromAccount || !selectedToAccount || !amount) {return;}
+    if (!fromAccount || !selectedToAccount || !amount) {
+      return;
+    }
 
     navigation.navigate('ConfirmTransfer', {
       fromAccountName: fromAccount.clientName ?? 'Savings Account',
@@ -145,10 +152,11 @@ export default function MakePaymentScreen() {
         style={styles.content}
         contentContainerStyle={[
           styles.scrollContent,
-          {paddingBottom: insets.bottom + spacing.md},
+          { paddingBottom: insets.bottom + spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Pay To Section - Loan accounts from API */}
         <DropdownSelect
           sectionLabel="Pay To"
@@ -166,7 +174,9 @@ export default function MakePaymentScreen() {
           <PayFromCard
             label="Pay From"
             accountType={fromAccount.accountType?.value ?? 'Savings Account'}
-            accountNumber={`**** **** **** ${(fromAccount.accountNo ?? '').slice(-4)}`}
+            accountNumber={`**** **** **** ${(
+              fromAccount.accountNo ?? ''
+            ).slice(-4)}`}
             balanceLabel="Current Balance"
             balance={fromAccount.clientName ?? ''}
           />

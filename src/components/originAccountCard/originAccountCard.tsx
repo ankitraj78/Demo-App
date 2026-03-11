@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './originAccountCard.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './originAccountCard.styles';
 import BalanceRow from '../balanceRow/balanceRow';
 import LabeledField from '../labeledField/labeledField';
 
@@ -30,7 +30,7 @@ export default function OriginAccountCard({
   return (
     <View>
       <Text style={styles.sectionLabel}>{label}</Text>
-      <View style={[styles.originCard, {backgroundColor}]}>
+      <View style={[styles.originCard, { backgroundColor }]}>
         <View style={styles.originCardHeader}>
           <View>
             <Text style={styles.originAccountType}>{accountType}</Text>
@@ -61,7 +61,8 @@ export default function OriginAccountCard({
         <TouchableOpacity
           style={styles.selectOtherBtn}
           activeOpacity={0.7}
-          onPress={onSelectOther}>
+          onPress={onSelectOther}
+        >
           <MaterialIcons
             name="swap-horiz"
             size={iconSize.md}

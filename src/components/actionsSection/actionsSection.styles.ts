@@ -1,10 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {
-  spacing,
-  fontSize,
-  fontWeight,
-  colors,
-} from '../../../theme';
+import { StyleSheet } from 'react-native';
+import { spacing, fontSize, fontWeight, colors } from '../../theme';
 
 export const styles = StyleSheet.create({
   actionsWrapper: {

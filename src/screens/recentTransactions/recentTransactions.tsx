@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './recentTransactions.styles';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './recentTransactions.styles';
 
 type Transaction = {
   id: string;
@@ -134,7 +134,7 @@ export default function RecentTransactionsScreen() {
       />
 
       {/* Header */}
-      <View style={[styles.header, {paddingTop: insets.top + spacing.xl}]}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.xl }]}>
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
             <TouchableOpacity style={styles.backBtn} activeOpacity={0.7}>
@@ -177,7 +177,8 @@ export default function RecentTransactionsScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filtersRow}>
+          contentContainerStyle={styles.filtersRow}
+        >
           {FILTERS.map(filter => (
             <TouchableOpacity
               key={filter}
@@ -186,12 +187,14 @@ export default function RecentTransactionsScreen() {
                 activeFilter === filter && styles.filterChipActive,
               ]}
               onPress={() => setActiveFilter(filter)}
-              activeOpacity={0.7}>
+              activeOpacity={0.7}
+            >
               <Text
                 style={[
                   styles.filterChipText,
                   activeFilter === filter && styles.filterChipTextActive,
-                ]}>
+                ]}
+              >
                 {filter}
               </Text>
             </TouchableOpacity>
@@ -204,8 +207,9 @@ export default function RecentTransactionsScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
           styles.content,
-          {paddingBottom: insets.bottom + spacing['6xl']},
-        ]}>
+          { paddingBottom: insets.bottom + spacing['6xl'] },
+        ]}
+      >
         {filteredGroups.map(group => (
           <View key={group.title}>
             <Text style={styles.sectionLabel}>{group.title}</Text>
@@ -214,13 +218,15 @@ export default function RecentTransactionsScreen() {
                 <TouchableOpacity
                   key={tx.id}
                   style={styles.transactionItem}
-                  activeOpacity={0.7}>
+                  activeOpacity={0.7}
+                >
                   <View style={styles.transactionLeft}>
                     <View
                       style={[
                         styles.transactionIconBox,
-                        {backgroundColor: tx.iconBg},
-                      ]}>
+                        { backgroundColor: tx.iconBg },
+                      ]}
+                    >
                       <MaterialIcons
                         name={tx.icon}
                         size={iconSize.xl}
@@ -241,7 +247,8 @@ export default function RecentTransactionsScreen() {
                         tx.type === 'withdrawal'
                           ? styles.amountWithdrawal
                           : styles.amountDeposit,
-                      ]}>
+                      ]}
+                    >
                       {tx.amount}
                     </Text>
                     <Text style={styles.transactionStatus}>{tx.status}</Text>

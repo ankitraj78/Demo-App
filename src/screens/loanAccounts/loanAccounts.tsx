@@ -7,28 +7,32 @@ import {
   ActivityIndicator,
   Text,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
-import {colors, spacing, iconSize} from '../../../theme';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
+import { colors, spacing, iconSize } from '../../theme';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import SummaryCard from '../../components/summaryCard/summaryCard';
 import SectionTitle from '../../components/sectionTitle/sectionTitle';
 import LoanCard from '../../components/loanCard/loanCard';
-import type {Loan} from '../../components/loanCard/loanCard';
-import {useLoanAccounts} from '../../api/useLoanAccounts';
-import {useAuth} from '../../api/authContext';
-import type {LoanAccount} from '../../api/types';
-import {styles} from './loanAccounts.styles';
+import type { Loan } from '../../components/loanCard/loanCard';
+import { useLoanAccounts } from '../../hooks/useLoanAccounts';
+import { useAuth } from '../../hooks/authContext';
+import type { LoanAccount } from '../../services/types';
+import { styles } from './loanAccounts.styles';
 
 function getLoanIcon(productName?: string): string {
   const name = (productName ?? '').toLowerCase();
   if (name.includes('home') || name.includes('housing')) {
     return 'home';
   }
-  if (name.includes('auto') || name.includes('car') || name.includes('vehicle')) {
+  if (
+    name.includes('auto') ||
+    name.includes('car') ||
+    name.includes('vehicle')
+  ) {
     return 'directions-car';
   }
   if (name.includes('education') || name.includes('student')) {
@@ -43,14 +47,15 @@ function getLoanIcon(productName?: string): string {
   return 'account-balance';
 }
 
-function mapLoanStatus(
-  status?: LoanAccount['status'],
-): {status: Loan['status']; statusLabel: string} {
+function mapLoanStatus(status?: LoanAccount['status']): {
+  status: Loan['status'];
+  statusLabel: string;
+} {
   if (status?.active) {
-    return {status: 'active', statusLabel: 'Active'};
+    return { status: 'active', statusLabel: 'Active' };
   }
   if (status?.pendingApproval || status?.waitingForDisbursal) {
-    return {status: 'pending', statusLabel: 'Submitted & Pending'};
+    return { status: 'pending', statusLabel: 'Submitted & Pending' };
   }
   if (
     status?.closed ||
@@ -58,12 +63,12 @@ function mapLoanStatus(
     status?.closedWrittenOff ||
     status?.closedRescheduled
   ) {
-    return {status: 'withdrawn', statusLabel: 'Closed'};
+    return { status: 'withdrawn', statusLabel: 'Closed' };
   }
   if (status?.overpaid) {
-    return {status: 'active', statusLabel: 'Overpaid'};
+    return { status: 'active', statusLabel: 'Overpaid' };
   }
-  return {status: 'pending', statusLabel: status?.value ?? 'Unknown'};
+  return { status: 'pending', statusLabel: status?.value ?? 'Unknown' };
 }
 
 function formatCurrency(
@@ -77,7 +82,7 @@ function formatCurrency(
 }
 
 function mapToLoan(account: LoanAccount): Loan {
-  const {status, statusLabel} = mapLoanStatus(account.status);
+  const { status, statusLabel } = mapLoanStatus(account.status);
   const symbol = account.currency?.displaySymbol;
   const dp = account.currency?.decimalPlaces;
   const isWithdrawn = status === 'withdrawn';
@@ -110,8 +115,10 @@ export default function LoanAccountsScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {clientId} = useAuth();
-  const {loanAccounts, loading, error, refetch} = useLoanAccounts(clientId ?? 0);
+  const { clientId } = useAuth();
+  const { loanAccounts, loading, error, refetch } = useLoanAccounts(
+    clientId ?? 0,
+  );
 
   const loans = loanAccounts.map(mapToLoan);
   const activeCount = loanAccounts.filter(a => a.status?.active).length;
@@ -162,12 +169,15 @@ export default function LoanAccountsScreen() {
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: insets.bottom + spacing.xl}}>
+          contentContainerStyle={{ paddingBottom: insets.bottom + spacing.xl }}
+        >
           <SummaryCard
             label="Total Borrowings"
             amount={computeTotalBorrowings(loanAccounts)}
             badgeIconName="account-balance-wallet"
-            badgeText={`${activeCount} Active Account${activeCount !== 1 ? 's' : ''}`}
+            badgeText={`${activeCount} Active Account${
+              activeCount !== 1 ? 's' : ''
+            }`}
           />
 
           <SectionTitle title="Your Loans" />

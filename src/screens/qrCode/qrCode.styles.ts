@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   colors,
   spacing,
@@ -6,7 +6,7 @@ import {
   fontWeight,
   borderRadius,
   shadows,
-} from '../../../theme';
+} from '../../theme';
 
 const FRAME_SIZE = 300;
 const CORNER_SIZE = 32;

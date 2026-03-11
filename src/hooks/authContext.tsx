@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useState, useCallback} from 'react';
-import {login as loginApi} from './authService';
-import {setAuthToken} from './apiClient';
+import {login as loginApi} from '../services/authService';
+import {setAuthToken} from '../services/apiClient';
 
 type AuthState = {
   isAuthenticated: boolean;

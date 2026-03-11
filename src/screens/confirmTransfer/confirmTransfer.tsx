@@ -1,41 +1,64 @@
-import React, {useState} from 'react';
-import {View, ScrollView, StatusBar, ActivityIndicator, Alert, Text} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {colors, spacing} from '../../../theme';
-import {styles} from './confirmTransfer.styles';
+import React, { useState } from 'react';
+import {
+  View,
+  ScrollView,
+  StatusBar,
+  ActivityIndicator,
+  Alert,
+  Text,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { colors, spacing } from '../../theme';
+import { styles } from './confirmTransfer.styles';
 import TransferAccountCard from '../../components/transferAccountCard/transferAccountCard';
 import ActionButtons from '../../components/actionButtons/actionButtons';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DetailsCard from '../../components/detailsCard/detailsCard';
-import PoweredByFooter from '../../components/poweredByFooter/poweredByFooter';
-import {makeThirdPartyTransfer} from '../../api/transferService';
 
-type ConfirmTransferRouteProp = RouteProp<RootStackParamList, 'ConfirmTransfer'>;
+import { makeThirdPartyTransfer } from '../../services/transferService';
+
+type ConfirmTransferRouteProp = RouteProp<
+  RootStackParamList,
+  'ConfirmTransfer'
+>;
 
 function formatTransferDate(): string {
   const now = new Date();
   const day = String(now.getDate()).padStart(2, '0');
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
   return `${day} ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
 
 export default function ConfirmTransferScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<ConfirmTransferRouteProp>();
 
   if (!route.params) {
     return (
       <View style={styles.root}>
-        <ScreenHeader title="Confirm Transfer" />
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={{color: colors.textSecondary}}>
+        <ScreenHeader title="Confirm Transfer" backgroundColor={colors.white} />
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Text style={{ color: colors.textSecondary }}>
             Transfer details not available.
           </Text>
         </View>
@@ -96,9 +119,12 @@ export default function ConfirmTransferScreen() {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundLight} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={colors.white}
+      />
 
-      <ScreenHeader title="Confirm Transfer" />
+      <ScreenHeader title="Confirm Transfer" backgroundColor={colors.white} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -106,7 +132,8 @@ export default function ConfirmTransferScreen() {
           padding: spacing.xl,
           paddingBottom: insets.bottom + spacing['2xl'],
           gap: spacing['2xl'],
-        }}>
+        }}
+      >
         {/* Pay From Section */}
         <TransferAccountCard
           label="Pay From"
@@ -127,10 +154,14 @@ export default function ConfirmTransferScreen() {
         <DetailsCard
           title="Transfer Details"
           rows={[
-            {label: 'Amount', value: `$${parseFloat(amount).toFixed(2)}`, highlight: true},
-            {label: 'Date', value: transferDate},
+            {
+              label: 'Amount',
+              value: `$${parseFloat(amount).toFixed(2)}`,
+              highlight: true,
+            },
+            { label: 'Date', value: transferDate },
             ...(remarks
-              ? [{label: 'Remark', value: remarks, vertical: true}]
+              ? [{ label: 'Remark', value: remarks, vertical: true }]
               : []),
           ]}
         />
@@ -147,7 +178,7 @@ export default function ConfirmTransferScreen() {
           />
         )}
 
-        <PoweredByFooter />
+
       </ScrollView>
     </View>
   );

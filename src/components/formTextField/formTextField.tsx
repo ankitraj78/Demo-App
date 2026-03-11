@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, TextInput, KeyboardTypeOptions} from 'react-native';
-import {colors} from '../../../theme';
-import {styles} from './formTextField.styles';
+import { View, Text, TextInput, KeyboardTypeOptions } from 'react-native';
+import { colors } from '../../theme';
+import { styles } from './formTextField.styles';
 
 type FormTextFieldProps = {
   label: string;

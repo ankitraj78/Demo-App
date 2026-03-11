@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './actionButtons.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './actionButtons.styles';
 
 interface ActionButtonsProps {
   confirmLabel: string;
@@ -24,7 +24,8 @@ export default function ActionButtons({
       <TouchableOpacity
         style={styles.confirmButton}
         activeOpacity={0.8}
-        onPress={onConfirm}>
+        onPress={onConfirm}
+      >
         <Text style={styles.confirmButtonText}>{confirmLabel}</Text>
         {confirmIconName && (
           <MaterialIcons
@@ -37,7 +38,8 @@ export default function ActionButtons({
       <TouchableOpacity
         style={styles.cancelButton}
         activeOpacity={0.7}
-        onPress={onCancel}>
+        onPress={onCancel}
+      >
         <Text style={styles.cancelButtonText}>{cancelLabel}</Text>
       </TouchableOpacity>
     </View>

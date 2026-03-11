@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import { View, Text } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors} from '../../../theme';
-import {styles} from './heroCard.styles';
+import { colors } from '../../theme';
+import { styles } from './heroCard.styles';
 
 type HeroCardProps = {
   accountNumber: string;

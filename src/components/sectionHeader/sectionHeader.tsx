@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './sectionHeader.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './sectionHeader.styles';
 
 type SectionHeaderProps = {
   title: string;
@@ -24,7 +24,8 @@ export default function SectionHeader({
         <TouchableOpacity
           style={styles.actionBtn}
           activeOpacity={0.7}
-          onPress={onActionPress}>
+          onPress={onActionPress}
+        >
           {actionIcon && (
             <MaterialIcons
               name={actionIcon}

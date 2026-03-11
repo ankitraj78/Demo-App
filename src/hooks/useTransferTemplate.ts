@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
-import {fetchTransferTemplate} from './transferService';
-import type {AccountOption} from './types';
+import {fetchTransferTemplate} from '../services/transferService';
+import type {AccountOption} from '../services/types';
 
 type UseTransferTemplateResult = {
   fromAccounts: AccountOption[];

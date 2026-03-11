@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import { View, Text } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './payFromCard.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './payFromCard.styles';
 
 type PayFromCardProps = {
   label: string;
@@ -26,7 +26,7 @@ export default function PayFromCard({
   return (
     <View>
       <Text style={styles.sectionLabel}>{label}</Text>
-      <View style={[styles.payFromCard, {backgroundColor}]}>
+      <View style={[styles.payFromCard, { backgroundColor }]}>
         <View style={styles.payFromContent}>
           <View style={styles.payFromLeftSection}>
             <View>

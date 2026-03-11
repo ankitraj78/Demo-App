@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
-import {fetchLoanAccounts} from './loanService';
-import type {LoanAccount} from './types';
+import {fetchLoanAccounts} from '../services/loanService';
+import type {LoanAccount} from '../services/types';
 
 type UseLoanAccountsResult = {
   loanAccounts: LoanAccount[];

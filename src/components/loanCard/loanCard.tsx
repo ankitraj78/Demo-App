@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './loanCard.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './loanCard.styles';
 
 export type LoanStatus = 'active' | 'pending' | 'withdrawn';
 
@@ -18,7 +18,7 @@ export type Loan = {
   note?: string;
 };
 
-function StatusBadge({status, label}: {status: LoanStatus; label: string}) {
+function StatusBadge({ status, label }: { status: LoanStatus; label: string }) {
   const badgeStyle = [
     styles.statusBadge,
     status === 'active' && styles.statusBadgeActive,
@@ -44,7 +44,7 @@ type LoanCardProps = {
   onPress?: () => void;
 };
 
-export default function LoanCard({loan, onPress}: LoanCardProps) {
+export default function LoanCard({ loan, onPress }: LoanCardProps) {
   const isWithdrawn = loan.status === 'withdrawn';
   const isPending = loan.status === 'pending';
 
@@ -53,18 +53,21 @@ export default function LoanCard({loan, onPress}: LoanCardProps) {
       style={[styles.loanCard, isWithdrawn && styles.loanCardWithdrawn]}
       onPress={onPress}
       disabled={isWithdrawn}
-      activeOpacity={0.7}>
+      activeOpacity={0.7}
+    >
       <View style={styles.loanCardTop}>
         <View
           style={[
             styles.loanCardInfo,
             isWithdrawn && styles.loanCardInfoWithdrawn,
-          ]}>
+          ]}
+        >
           <View
             style={[
               styles.loanIconBox,
               isWithdrawn && styles.loanIconBoxWithdrawn,
-            ]}>
+            ]}
+          >
             <MaterialIcons
               name={loan.icon}
               size={iconSize.xl}
@@ -90,7 +93,8 @@ export default function LoanCard({loan, onPress}: LoanCardProps) {
             <Text
               style={
                 isPending ? styles.balanceAmountNeutral : styles.balanceAmount
-              }>
+              }
+            >
               {loan.amount}
             </Text>
           </View>

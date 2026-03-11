@@ -1,14 +1,14 @@
 import React from 'react';
-import {TouchableOpacity, Text} from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './biometricsButton.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './biometricsButton.styles';
 
 type BiometricsButtonProps = {
   onPress?: () => void;
 };
 
-export default function BiometricsButton({onPress}: BiometricsButtonProps) {
+export default function BiometricsButton({ onPress }: BiometricsButtonProps) {
   return (
     <TouchableOpacity style={styles.btn} onPress={onPress}>
       <MaterialIcons

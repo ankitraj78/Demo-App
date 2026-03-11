@@ -1,14 +1,14 @@
 import React from 'react';
-import {View, Text, StatusBar, Image, TouchableOpacity} from 'react-native';
+import { View, Text, StatusBar, Image, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import PoweredByFooter from '../../components/poweredByFooter/poweredByFooter';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './qrCode.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './qrCode.styles';
 
 export default function QrCodeScreen() {
   const shareButton = (
-    <TouchableOpacity activeOpacity={0.7} style={{padding: 8}}>
+    <TouchableOpacity activeOpacity={0.7} style={{ padding: 8 }}>
       <MaterialIcons name="share" size={iconSize.xl} color={colors.primary} />
     </TouchableOpacity>
   );
@@ -63,7 +63,9 @@ export default function QrCodeScreen() {
               size={14}
               color={colors.primary}
             />
-            <Text style={styles.metadataText}>Generated on: October 24, 2023</Text>
+            <Text style={styles.metadataText}>
+              Generated on: October 24, 2023
+            </Text>
           </View>
         </View>
       </View>

@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './recentActivity.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './recentActivity.styles';
 
 type Transaction = {
   icon: string;
@@ -35,10 +35,10 @@ const transactions: Transaction[] = [
   },
 ];
 
-function TransactionItem({transaction}: {transaction: Transaction}) {
+function TransactionItem({ transaction }: { transaction: Transaction }) {
   return (
     <View style={styles.txRow}>
-      <View style={[styles.txIcon, {backgroundColor: transaction.iconBg}]}>
+      <View style={[styles.txIcon, { backgroundColor: transaction.iconBg }]}>
         <MaterialIcons
           name={transaction.icon}
           size={iconSize.lg}
@@ -52,8 +52,9 @@ function TransactionItem({transaction}: {transaction: Transaction}) {
       <Text
         style={[
           styles.txAmount,
-          {color: transaction.isCredit ? colors.success : colors.error},
-        ]}>
+          { color: transaction.isCredit ? colors.success : colors.error },
+        ]}
+      >
         {transaction.amount}
       </Text>
     </View>

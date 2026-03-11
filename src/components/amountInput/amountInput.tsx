@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, TextInput} from 'react-native';
-import {colors} from '../../../theme';
-import {styles} from './amountInput.styles';
+import { View, Text, TextInput } from 'react-native';
+import { colors } from '../../theme';
+import { styles } from './amountInput.styles';
 
 type AmountInputProps = {
   amount: string;

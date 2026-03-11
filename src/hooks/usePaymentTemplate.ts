@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
-import {fetchPaymentTemplate} from './transferService';
-import type {AccountOption} from './types';
+import {fetchPaymentTemplate} from '../services/transferService';
+import type {AccountOption} from '../services/types';
 
 type UsePaymentTemplateResult = {
   fromAccounts: AccountOption[];

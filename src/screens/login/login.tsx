@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,12 @@ import {
   Platform,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {useAuth} from '../../api/authContext';
-import {styles} from './login.styles';
+import { colors, iconSize } from '../../theme';
+import { useAuth } from '../../hooks/authContext';
+import { styles } from './login.styles';
 
 export default function LoginScreen() {
-  const {login, loading, error} = useAuth();
+  const { login, loading, error } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -35,12 +35,14 @@ export default function LoginScreen() {
     <View style={styles.root}>
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
       <KeyboardAvoidingView
-        style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           {/* Branding */}
           <View style={styles.brandingContainer}>
             <View style={styles.logoCircle}>
@@ -75,7 +77,8 @@ export default function LoginScreen() {
                 style={[
                   styles.inputWrapper,
                   focusedField === 'username' && styles.inputWrapperFocused,
-                ]}>
+                ]}
+              >
                 <MaterialIcons
                   name="person-outline"
                   size={iconSize.lg}
@@ -108,7 +111,8 @@ export default function LoginScreen() {
                 style={[
                   styles.inputWrapper,
                   focusedField === 'password' && styles.inputWrapperFocused,
-                ]}>
+                ]}
+              >
                 <MaterialIcons
                   name="lock-outline"
                   size={iconSize.lg}
@@ -133,7 +137,8 @@ export default function LoginScreen() {
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(prev => !prev)}
-                  hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}>
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
                   <MaterialIcons
                     name={showPassword ? 'visibility' : 'visibility-off'}
                     size={iconSize.lg}
@@ -151,7 +156,8 @@ export default function LoginScreen() {
               ]}
               onPress={handleLogin}
               disabled={!canSubmit || loading}
-              activeOpacity={0.8}>
+              activeOpacity={0.8}
+            >
               {loading ? (
                 <ActivityIndicator color={colors.white} />
               ) : (

@@ -1,22 +1,22 @@
-import React, {useState} from 'react';
-import {View, ScrollView, StatusBar} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
-import {colors, spacing} from '../../../theme';
-import {styles} from './addBeneficiary.styles';
+import React, { useState } from 'react';
+import { View, ScrollView, StatusBar } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { colors, spacing } from '../../theme';
+import { styles } from './addBeneficiary.styles';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
-import type {DropdownOption} from '../../components/dropdownSelect/dropdownSelect';
+import type { DropdownOption } from '../../components/dropdownSelect/dropdownSelect';
 import StickyFooter from '../../components/stickyFooter/stickyFooter';
 import QrBanner from '../../components/qrBanner/qrBanner';
 import FormTextField from '../../components/formTextField/formTextField';
 import FormAmountField from '../../components/formAmountField/formAmountField';
 
 const accountTypeOptions: DropdownOption[] = [
-  {label: 'Savings Account', value: 'savings'},
-  {label: 'Current Account', value: 'current'},
-  {label: 'Business Account', value: 'business'},
-  {label: 'Fixed Deposit', value: 'fixed'},
+  { label: 'Savings Account', value: 'savings' },
+  { label: 'Current Account', value: 'current' },
+  { label: 'Business Account', value: 'business' },
+  { label: 'Fixed Deposit', value: 'fixed' },
 ];
 
 export default function AddBeneficiaryScreen() {
@@ -49,10 +49,11 @@ export default function AddBeneficiaryScreen() {
         style={styles.content}
         contentContainerStyle={[
           styles.scrollContent,
-          {paddingBottom: insets.bottom + spacing.md},
+          { paddingBottom: insets.bottom + spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         {/* QR Quick Setup Banner */}
         <QrBanner />
 

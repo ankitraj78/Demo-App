@@ -1,8 +1,8 @@
 import React from 'react';
-import {View} from 'react-native';
+import { View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors} from '../../../theme';
-import {styles} from './successIcon.styles';
+import { colors } from '../../theme';
+import { styles } from './successIcon.styles';
 
 interface SuccessIconProps {
   iconName?: string;

@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './qrBanner.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './qrBanner.styles';
 
 type QrBannerProps = {
   title?: string;
@@ -35,7 +35,8 @@ export default function QrBanner({
       <TouchableOpacity
         style={styles.qrButton}
         activeOpacity={0.85}
-        onPress={onPress}>
+        onPress={onPress}
+      >
         <Text style={styles.qrButtonText}>{buttonLabel}</Text>
       </TouchableOpacity>
     </View>

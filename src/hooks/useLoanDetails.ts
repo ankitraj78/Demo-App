@@ -1,6 +1,6 @@
 import {useState, useEffect, useCallback} from 'react';
-import {fetchLoanWithAssociations} from './loanService';
-import type {LoanWithAssociations} from './types';
+import {fetchLoanWithAssociations} from '../services/loanService';
+import type {LoanWithAssociations} from '../services/types';
 
 type UseLoanDetailsResult = {
   loanDetails: LoanWithAssociations | null;

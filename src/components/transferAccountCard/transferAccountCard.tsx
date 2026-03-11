@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import { View, Text } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './transferAccountCard.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './transferAccountCard.styles';
 
 interface TransferAccountCardProps {
   label: string;

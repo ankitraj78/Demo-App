@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, StyleProp, ViewStyle} from 'react-native';
+import { View, Text, StyleProp, ViewStyle } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './poweredByFooter.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './poweredByFooter.styles';
 
 type Variant = 'branded' | 'simple' | 'minimal';
 
@@ -17,7 +17,7 @@ export default function PoweredByFooter({
 }: PoweredByFooterProps) {
   if (variant === 'simple') {
     return (
-      <View style={[styles.footer, {opacity: 0.5}, style]}>
+      <View style={[styles.footer, { opacity: 0.5 }, style]}>
         <Text style={styles.footerTextSingle}>Powered by Mifos</Text>
         <View style={styles.footerLine} />
       </View>
@@ -26,7 +26,7 @@ export default function PoweredByFooter({
 
   if (variant === 'minimal') {
     return (
-      <View style={[styles.footer, {opacity: 0.6}, style]}>
+      <View style={[styles.footer, { opacity: 0.6 }, style]}>
         <Text style={styles.footerLabel}>Powered by</Text>
         <Text style={styles.footerBoldLabel}>MIFOS</Text>
       </View>

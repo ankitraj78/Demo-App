@@ -1,22 +1,30 @@
 import React from 'react';
-import {View, ScrollView, StatusBar, ActivityIndicator, Text} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {colors, spacing} from '../../../theme';
-import {styles} from './loanDetails.styles';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import {
+  View,
+  ScrollView,
+  StatusBar,
+  ActivityIndicator,
+  Text,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { colors, spacing } from '../../theme';
+import { styles } from './loanDetails.styles';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
-import type {ActionItem} from '../../components/actionCard/actionCard';
+import type { ActionItem } from '../../components/actionCard/actionCard';
 import ActionsSection from '../../components/actionsSection/actionsSection';
 import HeroCard from '../../components/heroCard/heroCard';
 import InstallmentCard from '../../components/installmentCard/installmentCard';
-import {useLoanDetails} from '../../api/useLoanDetails';
+import { useLoanDetails } from '../../hooks/useLoanDetails';
 
 type LoanDetailsRouteProp = RouteProp<RootStackParamList, 'LoanDetails'>;
 
 function formatDateFromArray(dateArr?: number[]): string {
-  if (!dateArr || dateArr.length < 3) {return 'N/A';}
+  if (!dateArr || dateArr.length < 3) {
+    return 'N/A';
+  }
   const [year, month, day] = dateArr;
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString('en-GB', {
@@ -27,7 +35,9 @@ function formatDateFromArray(dateArr?: number[]): string {
 }
 
 function formatAmount(amount?: number, symbol?: string): string {
-  if (amount == null) {return 'N/A';}
+  if (amount == null) {
+    return 'N/A';
+  }
   const sym = symbol ?? '$';
   return `${sym}${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
 }
@@ -82,9 +92,9 @@ export default function LoanDetailsScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<LoanDetailsRouteProp>();
-  const {loanId, name, accountNumber, balance} = route.params;
+  const { loanId, name, accountNumber, balance } = route.params;
 
-  const {loanDetails, loading, error} = useLoanDetails(loanId);
+  const { loanDetails, loading, error } = useLoanDetails(loanId);
 
   const firstTransaction = loanDetails?.transactions?.[0];
   const currencySymbol = loanDetails?.currency?.displaySymbol ?? '$';
@@ -98,14 +108,17 @@ export default function LoanDetailsScreen() {
 
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.backgroundLight} />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={colors.backgroundLight}
+      />
 
       <ScreenHeader title="Loan Account Details" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: insets.bottom + spacing.xl}}>
-
+        contentContainerStyle={{ paddingBottom: insets.bottom + spacing.xl }}
+      >
         {/* Hero Card */}
         <HeroCard
           accountNumber={accountNumber}
@@ -123,15 +136,17 @@ export default function LoanDetailsScreen() {
           </View>
         ) : error ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.errorText}>Could not load installment data</Text>
+            <Text style={styles.errorText}>
+              Could not load installment data
+            </Text>
           </View>
         ) : installmentAmount && installmentDueDate ? (
           <InstallmentCard
             iconName="event-repeat"
             title="Next Installment"
             items={[
-              {label: 'Installment Amount', value: installmentAmount},
-              {label: 'Due Date', value: installmentDueDate},
+              { label: 'Installment Amount', value: installmentAmount },
+              { label: 'Due Date', value: installmentDueDate },
             ]}
           />
         ) : null}
@@ -148,13 +163,15 @@ export default function LoanDetailsScreen() {
               });
             } else if (item.title === 'Loan Summary') {
               navigation.navigate('LoanSummary', {
+                loanId,
                 loanName: name,
                 loanAccountNumber: accountNumber,
               });
             } else if (item.title === 'Transactions') {
-              navigation.navigate('TransactionHistory');
+              navigation.navigate('TransactionHistory', { loanId });
             } else if (item.title === 'Repayment Schedule') {
               navigation.navigate('RepaymentSchedule', {
+                loanId,
                 accountNumber,
                 name,
               });

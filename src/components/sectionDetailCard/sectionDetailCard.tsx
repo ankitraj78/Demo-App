@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import { View, Text } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './sectionDetailCard.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './sectionDetailCard.styles';
 
 type DetailRow = {
   label: string;
@@ -46,10 +46,8 @@ export default function SectionDetailCard({
         {rows.map((row, index) => (
           <View
             key={row.label}
-            style={[
-              styles.detailRow,
-              index > 0 && styles.detailRowBorder,
-            ]}>
+            style={[styles.detailRow, index > 0 && styles.detailRowBorder]}
+          >
             <Text style={styles.detailLabel}>{row.label}</Text>
             <Text style={getValueStyle(row.variant)}>{row.value}</Text>
           </View>

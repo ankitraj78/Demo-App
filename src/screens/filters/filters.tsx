@@ -1,10 +1,18 @@
-import React, {useState} from 'react';
-import {View, Text, ScrollView, TouchableOpacity, StatusBar} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StatusBar,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './filters.styles';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './filters.styles';
+import { useAuth } from '../../hooks/authContext';
+import { useSavingsTransactions } from '../../hooks/useSavingsTransactions';
 
 type TransactionType = 'All' | 'Debits' | 'Credits';
 
@@ -21,6 +29,8 @@ const categories = [
 export default function FiltersScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const { clientId } = useAuth();
+  const { savingsDetails } = useSavingsTransactions(clientId);
 
   const [selectedType, setSelectedType] = useState<TransactionType>('All');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
@@ -28,6 +38,13 @@ export default function FiltersScreen() {
   ]);
   const [fromDate] = useState('Jan 01, 2024');
   const [toDate] = useState('Mar 31, 2024');
+
+  const accountName = savingsDetails?.savingsProductName ?? 'Savings Account';
+  const balance = savingsDetails?.summary?.accountBalance;
+  const currencySymbol = savingsDetails?.currency?.displaySymbol ?? '$';
+  const balanceText = balance != null
+    ? `Balance: ${currencySymbol}${balance.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`
+    : 'Balance: --';
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev =>
@@ -51,37 +68,44 @@ export default function FiltersScreen() {
       <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
 
       {/* Header */}
-      <View style={[styles.header, {paddingTop: insets.top + spacing.xl}]}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.xl }]}>
         <TouchableOpacity
           style={styles.closeBtn}
           onPress={() => navigation.goBack()}
-          activeOpacity={0.7}>
-          <MaterialIcons name="close" size={iconSize.xl} color={colors.textPrimary} />
+          activeOpacity={0.7}
+        >
+          <MaterialIcons
+            name="close"
+            size={iconSize.xl}
+            color={colors.textPrimary}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Filters</Text>
         <TouchableOpacity
           style={styles.clearBtn}
           onPress={handleClearAll}
-          activeOpacity={0.7}>
+          activeOpacity={0.7}
+        >
           <Text style={styles.clearBtnText}>Clear All</Text>
         </TouchableOpacity>
       </View>
 
       {/* Scrollable Content */}
       <ScrollView
-        style={{flex: 1}}
+        style={{ flex: 1 }}
         contentContainerStyle={[
           styles.scrollContent,
-          {paddingBottom: insets.bottom + spacing.md},
+          { paddingBottom: insets.bottom + spacing.md },
         ]}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         {/* Filter By Account */}
         <View>
           <Text style={styles.sectionTitle}>Filter By Account</Text>
           <TouchableOpacity style={styles.accountCard} activeOpacity={0.7}>
             <View style={styles.accountInfo}>
-              <Text style={styles.accountName}>Main Savings Account</Text>
-              <Text style={styles.accountBalance}>Balance: $12,450.00</Text>
+              <Text style={styles.accountName}>{accountName}</Text>
+              <Text style={styles.accountBalance}>{balanceText}</Text>
             </View>
             <View style={styles.changeBtn}>
               <Text style={styles.changeBtnText}>Change</Text>
@@ -122,12 +146,14 @@ export default function FiltersScreen() {
                     isActive && styles.segmentBtnActive,
                   ]}
                   onPress={() => setSelectedType(type)}
-                  activeOpacity={0.7}>
+                  activeOpacity={0.7}
+                >
                   <Text
                     style={[
                       styles.segmentBtnText,
                       isActive && styles.segmentBtnTextActive,
-                    ]}>
+                    ]}
+                  >
                     {type}
                   </Text>
                 </TouchableOpacity>
@@ -179,12 +205,14 @@ export default function FiltersScreen() {
                     isActive && styles.categoryChipActive,
                   ]}
                   onPress={() => toggleCategory(category)}
-                  activeOpacity={0.7}>
+                  activeOpacity={0.7}
+                >
                   <Text
                     style={[
                       styles.categoryChipText,
                       isActive && styles.categoryChipTextActive,
-                    ]}>
+                    ]}
+                  >
                     {category}
                   </Text>
                 </TouchableOpacity>
@@ -195,11 +223,14 @@ export default function FiltersScreen() {
       </ScrollView>
 
       {/* Footer */}
-      <View style={[styles.footer, {paddingBottom: insets.bottom + spacing.xl}]}>
+      <View
+        style={[styles.footer, { paddingBottom: insets.bottom + spacing.xl }]}
+      >
         <TouchableOpacity
           style={styles.applyButton}
           onPress={handleApply}
-          activeOpacity={0.85}>
+          activeOpacity={0.85}
+        >
           <Text style={styles.applyButtonText}>Apply Filters</Text>
           <MaterialIcons name="done-all" size={20} color={colors.white} />
         </TouchableOpacity>

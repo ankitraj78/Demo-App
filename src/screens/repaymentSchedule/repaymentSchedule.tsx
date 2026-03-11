@@ -1,19 +1,51 @@
-import React, {useState} from 'react';
-import {View, Text, ScrollView, StatusBar, TouchableOpacity} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './repaymentSchedule.styles';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import { generatePDF } from 'react-native-html-to-pdf';
+import Share from 'react-native-share';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './repaymentSchedule.styles';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
-import StickyFooter from '../../components/stickyFooter/stickyFooter';
+import { useLoanSummary } from '../../hooks/useLoanSummary';
+import type { RepaymentPeriod } from '../../services/types';
+import { generateRepaymentScheduleHtml } from './repaymentSchedulePdf';
 
 type RepaymentScheduleRouteProp = RouteProp<
   RootStackParamList,
   'RepaymentSchedule'
 >;
+
+function formatDateFromArray(dateArr?: number[]): string {
+  if (!dateArr || dateArr.length < 3) {
+    return 'N/A';
+  }
+  const [year, month, day] = dateArr;
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+function formatAmount(amount?: number, symbol?: string): string {
+  if (amount == null) {
+    return `${symbol ?? '$'}0.00`;
+  }
+  const sym = symbol ?? '$';
+  return `${sym}${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+}
 
 type Installment = {
   number: number;
@@ -26,105 +58,112 @@ type Installment = {
   status: 'paid' | 'upcoming' | 'future';
 };
 
-const installments: Installment[] = [
-  {
-    number: 1,
-    date: '9 Apr 2026',
-    paidDate: '9 Apr 2026',
-    principal: '$133.86',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.86',
-    status: 'paid',
-  },
-  {
-    number: 2,
-    date: '9 May 2026',
-    paidDate: '8 May 2026',
-    principal: '$133.86',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.86',
-    status: 'paid',
-  },
-  {
-    number: 3,
-    date: '9 Jun 2026',
-    paidDate: '9 Jun 2026',
-    principal: '$133.87',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.87',
-    status: 'paid',
-  },
-  {
-    number: 4,
-    date: '9 Jul 2026',
-    principal: '$133.86',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.86',
-    status: 'upcoming',
-  },
-  {
-    number: 5,
-    date: '9 Aug 2026',
-    principal: '$133.86',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.86',
-    status: 'future',
-  },
-  {
-    number: 6,
-    date: '9 Sep 2026',
-    principal: '$133.86',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.86',
-    status: 'future',
-  },
-  {
-    number: 7,
-    date: '9 Oct 2026',
-    principal: '$133.86',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.86',
-    status: 'future',
-  },
-  {
-    number: 8,
-    date: '9 Nov 2026',
-    principal: '$133.87',
-    interest: '$15.00',
-    fees: '$0.00',
-    total: '$148.87',
-    status: 'future',
-  },
-];
+function mapPeriodsToInstallments(
+  periods: RepaymentPeriod[],
+  currencySymbol: string,
+): Installment[] {
+  // Filter out period 0 (disbursement period) — only include actual repayment periods
+  const repaymentPeriods = periods.filter(
+    p => p.period != null && p.period > 0,
+  );
 
-const paidCount = installments.filter(i => i.status === 'paid').length;
-const totalCount = installments.length;
-const progressPercent = (paidCount / totalCount) * 100;
+  return repaymentPeriods.map(period => {
+    let status: Installment['status'] = 'future';
+    if (period.complete) {
+      status = 'paid';
+    } else {
+      // First incomplete period is "upcoming", rest are "future"
+      const firstIncomplete = repaymentPeriods.find(p => !p.complete);
+      if (firstIncomplete && firstIncomplete.period === period.period) {
+        status = 'upcoming';
+      }
+    }
 
-const nextInstallment = installments.find(i => i.status === 'upcoming');
-const totalOutstanding = '$744.30';
+    return {
+      number: period.period ?? 0,
+      date: formatDateFromArray(period.dueDate),
+      paidDate:
+        period.obligationsMetOnDate && period.obligationsMetOnDate.length >= 3
+          ? formatDateFromArray(period.obligationsMetOnDate)
+          : undefined,
+      principal: formatAmount(period.principalDue, currencySymbol),
+      interest: formatAmount(period.interestDue, currencySymbol),
+      fees: formatAmount(
+        (period.feeChargesDue ?? 0) + (period.penaltyChargesDue ?? 0),
+        currencySymbol,
+      ),
+      total: formatAmount(period.totalDueForPeriod, currencySymbol),
+      status,
+    };
+  });
+}
 
 export default function RepaymentScheduleScreen() {
   const insets = useSafeAreaInsets();
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<RepaymentScheduleRouteProp>();
-  const {accountNumber, name} = route.params;
+  const { loanId, accountNumber } = route.params;
+
+  const { loanSummary, loading, error, refetch } = useLoanSummary(loanId);
 
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
-  const handleMakePayment = () => {
-    navigation.navigate('MakePayment', {
-      loanName: name,
-      loanAccountNumber: accountNumber,
-    });
+  const currencySymbol = loanSummary?.currency?.displaySymbol ?? '$';
+  const schedule = loanSummary?.repaymentSchedule;
+  const summary = loanSummary?.summary;
+  const statusValue = loanSummary?.status?.value ?? 'Active';
+
+  const installments = schedule?.periods
+    ? mapPeriodsToInstallments(schedule.periods, currencySymbol)
+    : [];
+
+  const paidCount = installments.filter(i => i.status === 'paid').length;
+  const totalCount = installments.length;
+  const progressPercent = totalCount > 0 ? (paidCount / totalCount) * 100 : 0;
+
+  const totalOutstanding = formatAmount(
+    summary?.totalOutstanding ?? schedule?.totalOutstanding,
+    currencySymbol,
+  );
+
+  const disbursementDate = formatDateFromArray(
+    loanSummary?.timeline?.actualDisbursementDate,
+  );
+  const principalPaid = formatAmount(summary?.principalPaid, currencySymbol);
+
+  const handleDownload = async () => {
+    if (downloading) {
+      return;
+    }
+    setDownloading(true);
+    try {
+      const html = generateRepaymentScheduleHtml({
+        accountNumber,
+        status: statusValue,
+        disbursementDate,
+        principalPaid,
+        totalOutstanding,
+        paidCount,
+        totalCount,
+        installments,
+      });
+      const pdf = await generatePDF({
+        html,
+        fileName: `Repayment_Schedule_${accountNumber}`,
+      });
+      if (pdf.filePath) {
+        await Share.open({
+          url: `file://${pdf.filePath}`,
+          type: 'application/pdf',
+        });
+      }
+    } catch (err: any) {
+      if (err?.message !== 'User did not share') {
+        Alert.alert('Error', 'Failed to generate PDF. Please try again.');
+      }
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const toggleRow = (rowNumber: number) => {
@@ -133,12 +172,21 @@ export default function RepaymentScheduleScreen() {
 
   const renderHeaderActions = () => (
     <View style={styles.headerActions}>
-      <TouchableOpacity style={styles.headerActionBtn} activeOpacity={0.7}>
-        <MaterialIcons
-          name="file-download"
-          size={iconSize.lg}
-          color={colors.textPrimary}
-        />
+      <TouchableOpacity
+        style={styles.headerActionBtn}
+        activeOpacity={0.7}
+        onPress={handleDownload}
+        disabled={downloading}
+      >
+        {downloading ? (
+          <ActivityIndicator size="small" color={colors.textPrimary} />
+        ) : (
+          <MaterialIcons
+            name="file-download"
+            size={iconSize.lg}
+            color={colors.textPrimary}
+          />
+        )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.headerActionBtn} activeOpacity={0.7}>
         <MaterialIcons
@@ -173,14 +221,14 @@ export default function RepaymentScheduleScreen() {
           style={[
             styles.tableRow,
             isUpcoming && styles.tableRowUpcoming,
-            isLast && {borderBottomWidth: 0},
-          ]}>
+            isLast && { borderBottomWidth: 0 },
+          ]}
+        >
           {/* # */}
           <View style={styles.colNumber}>
             <Text
-              style={
-                isUpcoming ? styles.cellNumberUpcoming : styles.cellNumber
-              }>
+              style={isUpcoming ? styles.cellNumberUpcoming : styles.cellNumber}
+            >
               {item.number}
             </Text>
           </View>
@@ -188,7 +236,8 @@ export default function RepaymentScheduleScreen() {
           {/* Date */}
           <View style={styles.colDate}>
             <Text
-              style={isUpcoming ? styles.cellDateUpcoming : styles.cellDate}>
+              style={isUpcoming ? styles.cellDateUpcoming : styles.cellDate}
+            >
               {item.date}
             </Text>
             {renderPaidDateCell(item)}
@@ -197,9 +246,8 @@ export default function RepaymentScheduleScreen() {
           {/* Principal */}
           <View style={styles.colAmount}>
             <Text
-              style={
-                isUpcoming ? styles.cellAmountUpcoming : styles.cellAmount
-              }>
+              style={isUpcoming ? styles.cellAmountUpcoming : styles.cellAmount}
+            >
               {item.principal}
             </Text>
           </View>
@@ -207,7 +255,8 @@ export default function RepaymentScheduleScreen() {
           {/* Total */}
           <View style={styles.colTotal}>
             <Text
-              style={isUpcoming ? styles.cellTotalUpcoming : styles.cellTotal}>
+              style={isUpcoming ? styles.cellTotalUpcoming : styles.cellTotal}
+            >
               {item.total}
             </Text>
           </View>
@@ -236,6 +285,76 @@ export default function RepaymentScheduleScreen() {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.root}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.backgroundLight}
+        />
+        <ScreenHeader title="Repayment Schedule" />
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text
+            style={{
+              marginTop: spacing.md,
+              color: colors.textMuted,
+            }}
+          >
+            Loading repayment schedule...
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.root}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.backgroundLight}
+        />
+        <ScreenHeader title="Repayment Schedule" />
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <MaterialIcons
+            name="error-outline"
+            size={iconSize['3xl']}
+            color={colors.error}
+          />
+          <Text
+            style={{
+              marginTop: spacing.md,
+              color: colors.error,
+              textAlign: 'center',
+              paddingHorizontal: spacing.xl,
+            }}
+          >
+            {error}
+          </Text>
+          <TouchableOpacity
+            style={{
+              marginTop: spacing.lg,
+              paddingHorizontal: spacing.xl,
+              paddingVertical: spacing.md,
+              backgroundColor: colors.primary,
+              borderRadius: 8,
+            }}
+            onPress={refetch}
+          >
+            <Text style={{ color: colors.white, fontWeight: '600' }}>
+              Retry
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.root}>
       <StatusBar
@@ -250,7 +369,8 @@ export default function RepaymentScheduleScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: insets.bottom + 100}}>
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+      >
         {/* Loan Summary Card */}
         <View style={styles.summaryWrapper}>
           <View style={styles.summaryCard}>
@@ -271,7 +391,7 @@ export default function RepaymentScheduleScreen() {
                   <Text style={styles.accountNumber}>{accountNumber}</Text>
                 </View>
                 <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>Active</Text>
+                  <Text style={styles.statusText}>{statusValue}</Text>
                 </View>
               </View>
 
@@ -279,11 +399,11 @@ export default function RepaymentScheduleScreen() {
               <View style={styles.infoGrid}>
                 <View style={styles.infoItem}>
                   <Text style={styles.infoLabel}>Disbursement Date</Text>
-                  <Text style={styles.infoValue}>9 Mar 2026</Text>
+                  <Text style={styles.infoValue}>{disbursementDate}</Text>
                 </View>
                 <View style={styles.infoItem}>
                   <Text style={styles.infoLabel}>Principal Paid-off</Text>
-                  <Text style={styles.infoValueHighlight}>$401.59</Text>
+                  <Text style={styles.infoValueHighlight}>{principalPaid}</Text>
                 </View>
               </View>
 
@@ -298,7 +418,7 @@ export default function RepaymentScheduleScreen() {
                 <View
                   style={[
                     styles.progressBarFill,
-                    {width: `${progressPercent}%`},
+                    { width: `${progressPercent}%` },
                   ]}
                 />
               </View>
@@ -316,7 +436,7 @@ export default function RepaymentScheduleScreen() {
                 <View
                   style={[
                     styles.legendDot,
-                    {backgroundColor: colors.success},
+                    { backgroundColor: colors.success },
                   ]}
                 />
                 <Text style={styles.legendText}>Paid</Text>
@@ -325,7 +445,7 @@ export default function RepaymentScheduleScreen() {
                 <View
                   style={[
                     styles.legendDot,
-                    {backgroundColor: colors.primary},
+                    { backgroundColor: colors.primary },
                   ]}
                 />
                 <Text style={styles.legendText}>Upcoming</Text>
@@ -347,7 +467,7 @@ export default function RepaymentScheduleScreen() {
                 <Text style={styles.tableHeaderCell}>Principal</Text>
               </View>
               <View style={styles.colTotal}>
-                <Text style={[styles.tableHeaderCell, {textAlign: 'right'}]}>
+                <Text style={[styles.tableHeaderCell, { textAlign: 'right' }]}>
                   Total
                 </Text>
               </View>
@@ -364,14 +484,6 @@ export default function RepaymentScheduleScreen() {
           </View>
         </View>
       </ScrollView>
-
-      {/* Sticky Footer */}
-      <StickyFooter
-        buttonLabel={`Make Next Payment (${nextInstallment?.total ?? ''})`}
-        iconName="payments"
-        onPress={handleMakePayment}
-        paddingBottom={insets.bottom + spacing.xl}
-      />
     </View>
   );
 }

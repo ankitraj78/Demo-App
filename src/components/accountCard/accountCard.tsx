@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './accountCard.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './accountCard.styles';
 
 export default function AccountCard() {
   return (
@@ -27,19 +27,29 @@ export default function AccountCard() {
           <View style={styles.cardBalance}>
             <Text style={styles.balanceAmount}>$24,500.00</Text>
             <View style={styles.balanceTrend}>
-              <MaterialIcons name="trending-up" size={iconSize.sm} color={colors.successLight} />
-              <Text style={styles.balanceTrendText}>
-                +2.4% from last month
-              </Text>
+              <MaterialIcons
+                name="trending-up"
+                size={iconSize.sm}
+                color={colors.successLight}
+              />
+              <Text style={styles.balanceTrendText}>+2.4% from last month</Text>
             </View>
           </View>
           <View style={styles.cardActions}>
             <TouchableOpacity style={styles.addMoneyBtn}>
-              <MaterialIcons name="add-circle" size={iconSize.md} color={colors.primary} />
+              <MaterialIcons
+                name="add-circle"
+                size={iconSize.md}
+                color={colors.primary}
+              />
               <Text style={styles.addMoneyText}>Add Money</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.transferBtn}>
-              <MaterialIcons name="send" size={iconSize.md} color={colors.white} />
+              <MaterialIcons
+                name="send"
+                size={iconSize.md}
+                color={colors.white}
+              />
               <Text style={styles.transferText}>Transfer</Text>
             </TouchableOpacity>
           </View>

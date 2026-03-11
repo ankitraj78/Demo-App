@@ -1,9 +1,9 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './bottomNav.styles';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './bottomNav.styles';
 
 type NavItem = {
   icon: string;
@@ -12,18 +12,20 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  {icon: 'home', label: 'Home', active: true},
-  {icon: 'list-alt', label: 'History', active: false},
-  {icon: 'qr-code-scanner', label: '', active: false},
-  {icon: 'credit-card', label: 'Cards', active: false},
-  {icon: 'more-horiz', label: 'More', active: false},
+  { icon: 'home', label: 'Home', active: true },
+  { icon: 'list-alt', label: 'History', active: false },
+  { icon: 'qr-code-scanner', label: '', active: false },
+  { icon: 'credit-card', label: 'Cards', active: false },
+  { icon: 'more-horiz', label: 'More', active: false },
 ];
 
 export default function BottomNav() {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.bottomNav, {paddingBottom: insets.bottom + spacing.md}]}>
+    <View
+      style={[styles.bottomNav, { paddingBottom: insets.bottom + spacing.md }]}
+    >
       {navItems.map((item, index) => {
         if (index === 2) {
           return (
@@ -48,8 +50,9 @@ export default function BottomNav() {
             <Text
               style={[
                 styles.navLabel,
-                {color: item.active ? colors.primary : colors.textMuted},
-              ]}>
+                { color: item.active ? colors.primary : colors.textMuted },
+              ]}
+            >
               {item.label}
             </Text>
           </TouchableOpacity>

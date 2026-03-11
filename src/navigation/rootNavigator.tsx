@@ -1,6 +1,6 @@
 import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useAuth} from '../api/authContext';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useAuth } from '../hooks/authContext';
 import LoginScreen from '../screens/login/login';
 import TabNavigator from './tabNavigator';
 import LoanAccountsScreen from '../screens/loanAccounts/loanAccounts';
@@ -16,6 +16,7 @@ import ConfirmBeneficiaryScreen from '../screens/confirmBeneficiary/confirmBenef
 import MakeTransferScreen from '../screens/makeTransfer/makeTransfer';
 import AddBeneficiaryScreen from '../screens/addBeneficiary/addBeneficiary';
 import TransactionHistoryScreen from '../screens/transactionHistory/transactionHistory';
+import TransactionDetailsScreen from '../screens/transactionDetails/transactionDetails';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -50,16 +51,26 @@ export type RootStackParamList = {
     recipientName: string;
   };
   RepaymentSchedule: {
+    loanId: number;
     accountNumber: string;
     name: string;
   };
   QrCode: undefined;
   LoanSummary: {
+    loanId: number;
     loanName: string;
     loanAccountNumber: string;
   };
   Filters: undefined;
-  TransactionHistory: undefined;
+  TransactionHistory: {
+    loanId: number;
+  } | undefined;
+  TransactionDetails: {
+    loanId: number;
+    transactionId: number;
+    loanAccountNo: string;
+    loanProductName: string;
+  };
   MakeTransfer: undefined;
   AddBeneficiary: undefined;
   ConfirmBeneficiary: {
@@ -74,26 +85,48 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  const {isAuthenticated} = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
         <>
           <Stack.Screen name="MainTabs" component={TabNavigator} />
           <Stack.Screen name="LoanAccounts" component={LoanAccountsScreen} />
           <Stack.Screen name="LoanDetails" component={LoanDetailsScreen} />
-          <Stack.Screen name="ConfirmTransfer" component={ConfirmTransferScreen} />
+          <Stack.Screen
+            name="ConfirmTransfer"
+            component={ConfirmTransferScreen}
+          />
           <Stack.Screen name="MakePayment" component={MakePaymentScreen} />
-          <Stack.Screen name="TransactionAuth" component={TransactionAuthScreen} />
-          <Stack.Screen name="RepaymentSchedule" component={RepaymentScheduleScreen} />
+          <Stack.Screen
+            name="TransactionAuth"
+            component={TransactionAuthScreen}
+          />
+          <Stack.Screen
+            name="RepaymentSchedule"
+            component={RepaymentScheduleScreen}
+          />
           <Stack.Screen name="QrCode" component={QrCodeScreen} />
           <Stack.Screen name="Filters" component={FiltersScreen} />
           <Stack.Screen name="LoanSummary" component={LoanSummaryScreen} />
-          <Stack.Screen name="TransactionHistory" component={TransactionHistoryScreen} />
+          <Stack.Screen
+            name="TransactionHistory"
+            component={TransactionHistoryScreen}
+          />
+          <Stack.Screen
+            name="TransactionDetails"
+            component={TransactionDetailsScreen}
+          />
           <Stack.Screen name="MakeTransfer" component={MakeTransferScreen} />
-          <Stack.Screen name="AddBeneficiary" component={AddBeneficiaryScreen} />
-          <Stack.Screen name="ConfirmBeneficiary" component={ConfirmBeneficiaryScreen} />
+          <Stack.Screen
+            name="AddBeneficiary"
+            component={AddBeneficiaryScreen}
+          />
+          <Stack.Screen
+            name="ConfirmBeneficiary"
+            component={ConfirmBeneficiaryScreen}
+          />
         </>
       ) : (
         <Stack.Screen name="Login" component={LoginScreen} />

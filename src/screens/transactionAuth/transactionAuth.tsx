@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import {
-  View,
-  StatusBar,
-  ScrollView,
-} from 'react-native';
+import { View, StatusBar, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { colors, spacing } from '../../../theme';
+import { colors, spacing } from '../../theme';
 import { styles } from './transactionAuth.styles';
 import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
@@ -70,10 +66,10 @@ export default function TransactionAuthScreen() {
               amountLabel="Amount Transferred"
               amount={amount}
               details={[
-                {label: 'Recipient', value: recipientName},
-                {label: 'Ref Number', value: '#TRX-8829-4410', isRef: true},
-                {label: 'Date & Time', value: 'Oct 24, 2023 • 14:32'},
-                {label: 'Status', value: 'Completed', isBadge: true},
+                { label: 'Recipient', value: recipientName },
+                { label: 'Ref Number', value: '#TRX-8829-4410', isRef: true },
+                { label: 'Date & Time', value: 'Oct 24, 2023 • 14:32' },
+                { label: 'Status', value: 'Completed', isBadge: true },
               ]}
             />
 

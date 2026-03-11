@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, ScrollView, StatusBar} from 'react-native';
-import {colors} from '../../../theme';
-import {styles} from './homeScreen.styles';
+import { View, ScrollView, StatusBar } from 'react-native';
+import { colors } from '../../theme';
+import { styles } from './homeScreen.styles';
 import Header from '../../components/header/header';
 import AccountCard from '../../components/accountCard/accountCard';
 import QuickServices from '../../components/quickServices/quickServices';
@@ -16,8 +16,9 @@ export default function HomeScreen() {
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={{paddingBottom: 100}}
-        showsVerticalScrollIndicator={false}>
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
         <AccountCard />
         <QuickServices />
         <RecentActivity />

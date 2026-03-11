@@ -1,11 +1,11 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   colors,
   spacing,
   fontSize,
   fontWeight,
   borderRadius,
-} from '../../../theme';
+} from '../../theme';
 
 export const styles = StyleSheet.create({
   container: {

@@ -1,9 +1,16 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, fontSize, fontWeight, iconSize, shadows} from '../../theme';
+import {
+  colors,
+  spacing,
+  fontSize,
+  fontWeight,
+  iconSize,
+  shadows,
+} from '../theme';
 import HomeScreen from '../screens/homeScreen/homeScreen';
 import TransactionHistoryScreen from '../screens/transactionHistory/transactionHistory';
 
@@ -19,25 +26,39 @@ const Tab = createBottomTabNavigator<TabParamList>();
 
 function PlaceholderScreen() {
   return (
-    <View style={{flex: 1, backgroundColor: colors.white, alignItems: 'center', justifyContent: 'center'}}>
-      <Text style={{color: colors.textMuted, fontSize: fontSize.lg}}>Coming Soon</Text>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.white,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Text style={{ color: colors.textMuted, fontSize: fontSize.lg }}>
+        Coming Soon
+      </Text>
     </View>
   );
 }
 
-function CustomTabBar({state, navigation}: any) {
+function CustomTabBar({ state, navigation }: any) {
   const insets = useSafeAreaInsets();
 
   const tabs = [
-    {icon: 'home', label: 'Home'},
-    {icon: 'list-alt', label: 'History'},
-    {icon: 'qr-code-scanner', label: ''},
-    {icon: 'credit-card', label: 'Cards'},
-    {icon: 'more-horiz', label: 'More'},
+    { icon: 'home', label: 'Home' },
+    { icon: 'list-alt', label: 'History' },
+    { icon: 'qr-code-scanner', label: '' },
+    { icon: 'credit-card', label: 'Cards' },
+    { icon: 'more-horiz', label: 'More' },
   ];
 
   return (
-    <View style={[tabStyles.bottomNav, {paddingBottom: insets.bottom + spacing.md}]}>
+    <View
+      style={[
+        tabStyles.bottomNav,
+        { paddingBottom: insets.bottom + spacing.md },
+      ]}
+    >
       {tabs.map((tab, index) => {
         const isActive = state.index === index;
 
@@ -46,7 +67,8 @@ function CustomTabBar({state, navigation}: any) {
             <TouchableOpacity
               key="scan"
               style={tabStyles.scanBtnWrapper}
-              onPress={() => navigation.navigate('Scan')}>
+              onPress={() => navigation.navigate('Scan')}
+            >
               <View style={tabStyles.scanBtn}>
                 <MaterialIcons
                   name="qr-code-scanner"
@@ -62,7 +84,8 @@ function CustomTabBar({state, navigation}: any) {
           <TouchableOpacity
             key={tab.label}
             style={tabStyles.navItem}
-            onPress={() => navigation.navigate(state.routeNames[index])}>
+            onPress={() => navigation.navigate(state.routeNames[index])}
+          >
             <MaterialIcons
               name={tab.icon}
               size={iconSize.xl}
@@ -71,8 +94,9 @@ function CustomTabBar({state, navigation}: any) {
             <Text
               style={[
                 tabStyles.navLabel,
-                {color: isActive ? colors.primary : colors.textMuted},
-              ]}>
+                { color: isActive ? colors.primary : colors.textMuted },
+              ]}
+            >
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -86,7 +110,8 @@ export default function TabNavigator() {
   return (
     <Tab.Navigator
       tabBar={props => <CustomTabBar {...props} />}
-      screenOptions={{headerShown: false}}>
+      screenOptions={{ headerShown: false }}
+    >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="History" component={TransactionHistoryScreen} />
       <Tab.Screen name="Scan" component={PlaceholderScreen} />

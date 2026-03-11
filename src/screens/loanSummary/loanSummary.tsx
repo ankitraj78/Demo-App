@@ -1,27 +1,108 @@
 import React from 'react';
-import {View, Text, ScrollView, StatusBar, TouchableOpacity} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {
+  View,
+  Text,
+  ScrollView,
+  StatusBar,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './loanSummary.styles';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './loanSummary.styles';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
-import StickyFooter from '../../components/stickyFooter/stickyFooter';
-import PoweredByFooter from '../../components/poweredByFooter/poweredByFooter';
 import LoanHeroCard from '../../components/loanHeroCard/loanHeroCard';
 import SectionDetailCard from '../../components/sectionDetailCard/sectionDetailCard';
 import InstallmentCard from '../../components/installmentCard/installmentCard';
+import { useLoanSummary } from '../../hooks/useLoanSummary';
 
 type LoanSummaryRouteProp = RouteProp<RootStackParamList, 'LoanSummary'>;
 
+function formatAmount(amount?: number, symbol?: string): string {
+  if (amount == null) {
+    return `${symbol ?? '$'}0.00`;
+  }
+  const sym = symbol ?? '$';
+  return `${sym}${amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+}
+
+function formatDateFromArray(dateArr?: number[]): string {
+  if (!dateArr || dateArr.length < 3) {
+    return 'N/A';
+  }
+  const [year, month, day] = dateArr;
+  const date = new Date(year, month - 1, day);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export default function LoanSummaryScreen() {
   const insets = useSafeAreaInsets();
-  const navigation =
-    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<LoanSummaryRouteProp>();
-  const {loanName, loanAccountNumber} = route.params;
+  const { loanId, loanName, loanAccountNumber } = route.params;
+
+  const { loanSummary, loading, error, refetch } = useLoanSummary(loanId);
+
+  const summary = loanSummary?.summary;
+  const schedule = loanSummary?.repaymentSchedule;
+  const currencySymbol = loanSummary?.currency?.displaySymbol ?? '$';
+  const statusValue = loanSummary?.status?.value ?? 'Active';
+
+  // Find next unpaid period for installment info
+  const nextPeriod = schedule?.periods?.find(
+    p => p.period != null && p.period > 0 && !p.complete,
+  );
+  const completedPeriods =
+    schedule?.periods?.filter(
+      p => p.period != null && p.period > 0 && p.complete,
+    )?.length ?? 0;
+  const totalPeriods = loanSummary?.numberOfRepayments ?? 0;
+  const remainingPeriods = totalPeriods - completedPeriods;
+
+  if (loading) {
+    return (
+      <View style={styles.root}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.backgroundLight}
+        />
+        <ScreenHeader title="Loan Summary" />
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Loading loan summary...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.root}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor={colors.backgroundLight}
+        />
+        <ScreenHeader title="Loan Summary" />
+        <View style={styles.centerContainer}>
+          <MaterialIcons
+            name="error-outline"
+            size={iconSize['3xl']}
+            color={colors.error}
+          />
+          <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={refetch}>
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -33,9 +114,7 @@ export default function LoanSummaryScreen() {
       <ScreenHeader
         title="Loan Summary"
         rightAction={
-          <TouchableOpacity
-            style={{padding: spacing.md}}
-            activeOpacity={0.7}>
+          <TouchableOpacity style={{ padding: spacing.md }} activeOpacity={0.7}>
             <MaterialIcons
               name="more-vert"
               size={iconSize.xl}
@@ -47,12 +126,14 @@ export default function LoanSummaryScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: insets.bottom + 100}}>
+        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+      >
         {/* Summary Hero Card */}
         <LoanHeroCard
+          status={statusValue}
           accountNumber={loanAccountNumber}
-          loanType={loanName}
-          loanScheme="Standard Scheme"
+          loanType={loanSummary?.loanProductName ?? loanName}
+          loanScheme={loanSummary?.loanPurposeName ?? 'Standard Scheme'}
         />
 
         {/* Pay-off Details */}
@@ -60,9 +141,30 @@ export default function LoanSummaryScreen() {
           iconName="payments"
           title="Pay-off Details"
           rows={[
-            {label: 'Expected Payoff', value: '$5,240.00', variant: 'highlight'},
-            {label: 'Principal', value: '$5,000.00'},
-            {label: 'Interest', value: '$240.00'},
+            {
+              label: 'Expected Payoff',
+              value: formatAmount(
+                summary?.totalExpectedRepayment ??
+                  summary?.totalRepaymentExpected,
+                currencySymbol,
+              ),
+              variant: 'highlight',
+            },
+            {
+              label: 'Principal',
+              value: formatAmount(summary?.principalDisbursed, currencySymbol),
+            },
+            {
+              label: 'Interest',
+              value: formatAmount(summary?.interestCharged, currencySymbol),
+            },
+            {
+              label: 'Rate',
+              value:
+                loanSummary?.interestRatePerPeriod != null
+                  ? `${loanSummary.interestRatePerPeriod.toFixed(2)}%`
+                  : 'N/A',
+            },
           ]}
         />
 
@@ -71,9 +173,89 @@ export default function LoanSummaryScreen() {
           iconName="account-balance-wallet"
           title="Outstanding Details"
           rows={[
-            {label: 'Total Outstanding', value: '$4,850.00'},
-            {label: 'Arrears Amount', value: '$0.00', variant: 'danger'},
-            {label: 'Fees & Charges', value: '$15.00'},
+            {
+              label: 'Total Outstanding',
+              value: formatAmount(summary?.totalOutstanding, currencySymbol),
+              variant:
+                (summary?.totalOutstanding ?? 0) > 0 ? 'danger' : 'default',
+            },
+            {
+              label: 'Principal Outstanding',
+              value: formatAmount(
+                summary?.principalOutstanding,
+                currencySymbol,
+              ),
+            },
+            {
+              label: 'Interest Outstanding',
+              value: formatAmount(summary?.interestOutstanding, currencySymbol),
+            },
+          ]}
+        />
+
+        {/* Charges */}
+        <SectionDetailCard
+          iconName="receipt-long"
+          title="Charges"
+          rows={[
+            {
+              label: 'Fees',
+              value: formatAmount(summary?.feeChargesCharged, currencySymbol),
+            },
+            {
+              label: 'Penalties',
+              value: formatAmount(
+                summary?.penaltyChargesCharged,
+                currencySymbol,
+              ),
+            },
+          ]}
+        />
+
+        {/* Waivers */}
+        <SectionDetailCard
+          iconName="redeem"
+          title="Waivers"
+          rows={[
+            {
+              label: 'Interest Waived',
+              value: formatAmount(summary?.interestWaived, currencySymbol),
+            },
+            {
+              label: 'Penalties Waived',
+              value: formatAmount(
+                summary?.penaltyChargesWaived,
+                currencySymbol,
+              ),
+            },
+            {
+              label: 'Fees Waived',
+              value: formatAmount(summary?.feeChargesWaived, currencySymbol),
+            },
+          ]}
+        />
+
+        {/* Paid-off Details */}
+        <SectionDetailCard
+          iconName="check-circle"
+          title="Paid-off Details"
+          rows={[
+            {
+              label: 'Principal Paid',
+              value: formatAmount(summary?.principalPaid, currencySymbol),
+            },
+            {
+              label: 'Interest Paid',
+              value: formatAmount(summary?.interestPaid, currencySymbol),
+            },
+            {
+              label: 'Fees Paid',
+              value: formatAmount(summary?.feeChargesPaid, currencySymbol),
+            },
+            {
+              label: 'Penalties Paid',
+              value: formatAmount(summary?.penaltyChargesPaid, currencySymbol),
+            },
           ]}
         />
 
@@ -82,32 +264,28 @@ export default function LoanSummaryScreen() {
           iconName="event"
           title="Installment Details"
           items={[
-            {label: 'Regular Payment', value: '$450.00'},
-            {label: 'Months Left', value: '11'},
+            {
+              label: 'Regular Payment',
+              value: nextPeriod
+                ? formatAmount(nextPeriod.totalDueForPeriod, currencySymbol)
+                : 'N/A',
+            },
+            {
+              label: 'Months Left',
+              value: String(remainingPeriods),
+            },
           ]}
-          nextPayment={{
-            iconName: 'event',
-            label: 'Next Payment Date',
-            value: 'Oct 15, 2023',
-          }}
+          nextPayment={
+            nextPeriod?.dueDate
+              ? {
+                  iconName: 'event',
+                  label: 'Next Payment Date',
+                  value: formatDateFromArray(nextPeriod.dueDate),
+                }
+              : undefined
+          }
         />
-
-        {/* Powered by Mifos */}
-        <PoweredByFooter variant="minimal" />
       </ScrollView>
-
-      {/* Sticky Footer */}
-      <StickyFooter
-        buttonLabel="Make Payment"
-        iconName="account-balance-wallet"
-        paddingBottom={insets.bottom}
-        onPress={() =>
-          navigation.navigate('MakePayment', {
-            loanName,
-            loanAccountNumber,
-          })
-        }
-      />
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   colors,
   spacing,
@@ -6,19 +6,19 @@ import {
   fontWeight,
   borderRadius,
   shadows,
-} from '../../../theme';
+} from '../../theme';
 
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.backgroundLight,
+    backgroundColor: colors.white,
   },
 
   // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.backgroundLight,
+    backgroundColor: colors.white,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,

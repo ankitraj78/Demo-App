@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './stickyFooter.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './stickyFooter.styles';
 
 interface StickyFooterProps {
   buttonLabel: string;
@@ -20,11 +20,12 @@ export default function StickyFooter({
   paddingBottom,
 }: StickyFooterProps) {
   return (
-    <View style={[styles.footer, paddingBottom != null && {paddingBottom}]}>
+    <View style={[styles.footer, paddingBottom != null && { paddingBottom }]}>
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.85}
-        onPress={onPress}>
+        onPress={onPress}
+      >
         <Text style={styles.buttonText}>{buttonLabel}</Text>
         {iconName && (
           <MaterialIcons

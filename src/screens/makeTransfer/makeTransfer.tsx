@@ -1,27 +1,33 @@
-import React, {useState, useMemo} from 'react';
-import {View, ScrollView, StatusBar, ActivityIndicator, Text} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
-import {colors, spacing} from '../../../theme';
-import {styles} from './makeTransfer.styles';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import React, { useState, useMemo } from 'react';
+import {
+  View,
+  ScrollView,
+  StatusBar,
+  ActivityIndicator,
+  Text,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { colors, spacing } from '../../theme';
+import { styles } from './makeTransfer.styles';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import AmountInput from '../../components/amountInput/amountInput';
 import StickyFooter from '../../components/stickyFooter/stickyFooter';
 import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
-import type {DropdownOption} from '../../components/dropdownSelect/dropdownSelect';
+import type { DropdownOption } from '../../components/dropdownSelect/dropdownSelect';
 import OriginAccountCard from '../../components/originAccountCard/originAccountCard';
 import SectionHeader from '../../components/sectionHeader/sectionHeader';
 import TransactionSummary from '../../components/transactionSummary/transactionSummary';
-import {useTransferTemplate} from '../../api/useTransferTemplate';
+import { useTransferTemplate } from '../../hooks/useTransferTemplate';
 
 export default function MakeTransferScreen() {
   const insets = useSafeAreaInsets();
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  const {fromAccounts, toAccounts, loading, error, refetch} =
+  const { fromAccounts, toAccounts, loading, error, refetch } =
     useTransferTemplate();
 
   const [selectedFromIndex, setSelectedFromIndex] = useState(0);
@@ -72,12 +78,16 @@ export default function MakeTransferScreen() {
 
   const selectFrom = (value: string) => {
     const idx = fromAccounts.findIndex(a => a.accountNo === value);
-    if (idx >= 0) {setSelectedFromIndex(idx);}
+    if (idx >= 0) {
+      setSelectedFromIndex(idx);
+    }
     setShowFromDropdown(false);
   };
 
   const handleTransfer = () => {
-    if (!fromAccount || !selectedToAccount || !amount) {return;}
+    if (!fromAccount || !selectedToAccount || !amount) {
+      return;
+    }
 
     navigation.navigate('ConfirmTransfer', {
       fromAccountName: fromAccount.clientName ?? 'N/A',
@@ -139,10 +149,11 @@ export default function MakeTransferScreen() {
         style={styles.content}
         contentContainerStyle={[
           styles.scrollContent,
-          {paddingBottom: insets.bottom + spacing.md},
+          { paddingBottom: insets.bottom + spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled">
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Origin Account Section */}
         {fromAccount ? (
           <OriginAccountCard
@@ -165,7 +176,9 @@ export default function MakeTransferScreen() {
             fieldLabel="Select Account"
             options={fromOptions}
             selectedValue={fromAccount?.accountNo ?? ''}
-            displayText={`${fromAccount?.accountType?.value ?? ''} (${fromAccount?.accountNo ?? ''})`}
+            displayText={`${fromAccount?.accountType?.value ?? ''} (${
+              fromAccount?.accountNo ?? ''
+            })`}
             isOpen={true}
             onToggle={() => setShowFromDropdown(false)}
             onSelect={selectFrom}
@@ -208,8 +221,8 @@ export default function MakeTransferScreen() {
         {/* Transaction Summary */}
         <TransactionSummary
           rows={[
-            {label: 'Transaction Fee', value: 'Free'},
-            {label: 'Estimated Arrival', value: 'Instant'},
+            { label: 'Transaction Fee', value: 'Free' },
+            { label: 'Estimated Arrival', value: 'Instant' },
           ]}
         />
       </ScrollView>

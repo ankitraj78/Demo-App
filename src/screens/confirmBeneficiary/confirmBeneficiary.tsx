@@ -6,13 +6,13 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useNavigation, useRoute, RouteProp} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, spacing, iconSize} from '../../../theme';
-import {styles} from './confirmBeneficiary.styles';
-import type {RootStackParamList} from '../../navigation/rootNavigator';
+import { colors, spacing, iconSize } from '../../theme';
+import { styles } from './confirmBeneficiary.styles';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import PoweredByFooter from '../../components/poweredByFooter/poweredByFooter';
 
@@ -26,16 +26,16 @@ export default function ConfirmBeneficiaryScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<ConfirmBeneficiaryRouteProp>();
-  const {name, office, accountType, accountNumber, dailyLimit} = route.params;
+  const { name, office, accountType, accountNumber, dailyLimit } = route.params;
 
   const maskedAccount = `**** **** ${accountNumber.slice(-4)}`;
 
   const details = [
-    {label: 'Name', value: name},
-    {label: 'Office/Branch', value: office},
-    {label: 'Account Type', value: accountType},
-    {label: 'Account Number', value: maskedAccount, mono: true},
-    {label: 'Daily Transfer Limit', value: dailyLimit, highlight: true},
+    { label: 'Name', value: name },
+    { label: 'Office/Branch', value: office },
+    { label: 'Account Type', value: accountType },
+    { label: 'Account Number', value: maskedAccount, mono: true },
+    { label: 'Daily Transfer Limit', value: dailyLimit, highlight: true },
   ];
 
   return (
@@ -49,7 +49,10 @@ export default function ConfirmBeneficiaryScreen() {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: insets.bottom + spacing['2xl']}}>
+        contentContainerStyle={{
+          paddingBottom: insets.bottom + spacing['2xl'],
+        }}
+      >
         {/* Title Section */}
         <View style={styles.titleSection}>
           <Text style={styles.title}>Review Beneficiary Details</Text>
@@ -95,16 +98,18 @@ export default function ConfirmBeneficiaryScreen() {
               return (
                 <View
                   key={item.label}
-                  style={[styles.detailRow, isLast && styles.detailRowLast]}>
+                  style={[styles.detailRow, isLast && styles.detailRowLast]}
+                >
                   <Text style={styles.detailLabel}>{item.label}</Text>
                   <Text
                     style={
                       item.highlight
                         ? styles.detailValueHighlight
                         : item.mono
-                          ? styles.detailValueMono
-                          : styles.detailValue
-                    }>
+                        ? styles.detailValueMono
+                        : styles.detailValue
+                    }
+                  >
                     {item.value}
                   </Text>
                 </View>
@@ -134,7 +139,8 @@ export default function ConfirmBeneficiaryScreen() {
           <TouchableOpacity
             style={styles.confirmButton}
             activeOpacity={0.85}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+          >
             <Text style={styles.confirmButtonText}>
               Confirm & Add Beneficiary
             </Text>
@@ -142,7 +148,8 @@ export default function ConfirmBeneficiaryScreen() {
           <TouchableOpacity
             style={styles.cancelButton}
             activeOpacity={0.7}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+          >
             <Text style={styles.cancelButtonText}>Cancel and Go Back</Text>
           </TouchableOpacity>
         </View>

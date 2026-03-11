@@ -1,8 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './dropdownSelect.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './dropdownSelect.styles';
 
 export type DropdownOption = {
   label: string;
@@ -54,12 +54,14 @@ export default function DropdownSelect({
                   styles.dropdownOption,
                   isActive && styles.dropdownOptionActive,
                 ]}
-                onPress={() => onSelect(option.value)}>
+                onPress={() => onSelect(option.value)}
+              >
                 <Text
                   style={[
                     styles.dropdownOptionText,
                     isActive && styles.dropdownOptionTextActive,
-                  ]}>
+                  ]}
+                >
                   {option.label} ({option.value})
                 </Text>
               </TouchableOpacity>

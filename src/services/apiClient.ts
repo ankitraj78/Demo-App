@@ -1,4 +1,6 @@
-const BASE_URL = 'http://10.0.3.139:8080/fineract-provider/api/v1/self';
+import Config from 'react-native-config';
+
+const BASE_URL = Config.BASE_URL;
 
 const DEFAULT_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json',

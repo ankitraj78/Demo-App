@@ -1,8 +1,8 @@
-import React, {useRef, useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity} from 'react-native';
+import React, { useRef, useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {colors, iconSize} from '../../../theme';
-import {styles} from './pinAuthSection.styles';
+import { colors, iconSize } from '../../theme';
+import { styles } from './pinAuthSection.styles';
 
 type PinAuthSectionProps = {
   pinLength?: number;
@@ -59,7 +59,7 @@ export default function PinAuthSection({
             ]}
             value={digit}
             onChangeText={text => handleChange(text, index)}
-            onKeyPress={({nativeEvent}) =>
+            onKeyPress={({ nativeEvent }) =>
               handleKeyPress(nativeEvent.key, index)
             }
             onFocus={() => setFocusedIndex(index)}

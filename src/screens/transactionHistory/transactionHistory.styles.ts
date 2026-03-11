@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import {
   colors,
   spacing,
@@ -6,12 +6,12 @@ import {
   fontWeight,
   borderRadius,
   shadows,
-} from '../../../theme';
+} from '../../theme';
 
 export const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: colors.backgroundLight,
+    backgroundColor: colors.white,
   },
 
   // Header
@@ -21,8 +21,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.white,
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
   },
   headerBtn: {
     width: 40,
@@ -50,13 +48,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     backgroundColor: colors.backgroundLight,
-    borderRadius: borderRadius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.lg,
   },
   searchInput: {
     flex: 1,
-    fontSize: fontSize.sm,
+    fontSize: fontSize.md,
     color: colors.textPrimary,
     padding: 0,
   },
@@ -106,9 +104,6 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.white,
     padding: spacing.xl,
     borderRadius: borderRadius.xl,
-    borderWidth: 1,
-    borderColor: colors.borderLight,
-    ...shadows.sm,
   },
   txIconContainer: {
     width: 48,
@@ -139,6 +134,63 @@ export const styles = StyleSheet.create({
   },
   txTime: {
     fontSize: fontSize['2xs'],
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
+
+  // Empty / Loading / Error States
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing['2xl'],
+    gap: spacing.lg,
+  },
+  emptyText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  loadingText: {
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
+    marginTop: spacing.md,
+  },
+  errorText: {
+    fontSize: fontSize.sm,
+    color: colors.error,
+    textAlign: 'center',
+  },
+  retryBtn: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    marginTop: spacing.md,
+  },
+  retryText: {
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+    color: colors.white,
+  },
+
+  // Loan Info Card
+  loanInfoCard: {
+    backgroundColor: colors.white,
+    padding: spacing.xl,
+    borderRadius: borderRadius.xl,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    marginBottom: spacing['2xl'],
+    ...shadows.sm,
+  },
+  loanInfoTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.textPrimary,
+  },
+  loanInfoAccount: {
+    fontSize: fontSize.sm,
     color: colors.textMuted,
     marginTop: spacing.xs,
   },
