@@ -1,11 +1,15 @@
 import {apiClient} from './apiClient';
 import type {AccountOptionsTemplate, TransferPayload} from './types';
 
-// Matches Mifos: GET /accounttransfers/template?type=tpt
-export async function fetchTransferTemplate(): Promise<AccountOptionsTemplate> {
-  return apiClient<AccountOptionsTemplate>(
-    '/accounttransfers/template?type=tpt',
+// Matches Mifos: GET /accounttransfers/template (self) or ?type=tpt (third party)
+export async function fetchTransferTemplate(
+  type?: 'tpt',
+): Promise<AccountOptionsTemplate> {
+  const query = type ? '?type=tpt' : '';
+  const data = await apiClient<AccountOptionsTemplate>(
+    `/accounttransfers/template${query}`,
   );
+  return data;
 }
 
 // Matches Mifos: GET /accounttransfers/template?fromAccountId=&fromAccountType= (self transfer)

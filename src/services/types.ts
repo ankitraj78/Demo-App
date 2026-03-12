@@ -351,6 +351,31 @@ export type AccountOptionsTemplate = {
   toAccountOptions: AccountOption[];
 };
 
+// --- Beneficiary Types (GET /beneficiaries/tpt) ---
+
+export type Beneficiary = {
+  id: number;
+  name: string;
+  officeName?: string;
+  clientName?: string;
+  accountType?: AccountType;
+  accountNumber?: string;
+  transferLimit?: number;
+};
+
+export type BeneficiaryTemplate = {
+  accountTypeOptions: AccountType[];
+};
+
+export type CreateBeneficiaryPayload = {
+  locale: string;
+  name: string;
+  accountNumber: string;
+  accountType: number;
+  transferLimit: number;
+  officeName: string;
+};
+
 export type TransferPayload = {
   fromOfficeId?: number;
   fromClientId?: number;

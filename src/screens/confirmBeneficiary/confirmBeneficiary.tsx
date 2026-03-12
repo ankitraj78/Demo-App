@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StatusBar,
   TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -15,6 +17,7 @@ import { styles } from './confirmBeneficiary.styles';
 import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import PoweredByFooter from '../../components/poweredByFooter/poweredByFooter';
+import { createBeneficiary } from '../../services/beneficiaryService';
 
 type ConfirmBeneficiaryRouteProp = RouteProp<
   RootStackParamList,
@@ -26,7 +29,9 @@ export default function ConfirmBeneficiaryScreen() {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<ConfirmBeneficiaryRouteProp>();
-  const { name, office, accountType, accountNumber, dailyLimit } = route.params;
+  const { name, office, accountType, accountTypeId, accountNumber, dailyLimit } =
+    route.params;
+  const [submitting, setSubmitting] = useState(false);
 
   const maskedAccount = `**** **** ${accountNumber.slice(-4)}`;
 
@@ -137,13 +142,42 @@ export default function ConfirmBeneficiaryScreen() {
         {/* Footer Buttons */}
         <View style={styles.footer}>
           <TouchableOpacity
-            style={styles.confirmButton}
+            style={[styles.confirmButton, submitting && {opacity: 0.7}]}
             activeOpacity={0.85}
-            onPress={() => navigation.goBack()}
+            disabled={submitting}
+            onPress={async () => {
+              setSubmitting(true);
+              try {
+                const limitNum =
+                  parseFloat(dailyLimit.replace(/[^0-9.]/g, '')) || 0;
+                await createBeneficiary({
+                  locale: 'en',
+                  name,
+                  accountNumber,
+                  accountType: accountTypeId,
+                  transferLimit: limitNum,
+                  officeName: office,
+                });
+                Alert.alert('Success', 'Beneficiary added successfully.', [
+                  {text: 'OK', onPress: () => navigation.popToTop()},
+                ]);
+              } catch (err) {
+                Alert.alert(
+                  'Failed',
+                  err instanceof Error ? err.message : 'Something went wrong',
+                );
+              } finally {
+                setSubmitting(false);
+              }
+            }}
           >
-            <Text style={styles.confirmButtonText}>
-              Confirm & Add Beneficiary
-            </Text>
+            {submitting ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <Text style={styles.confirmButtonText}>
+                Confirm & Add Beneficiary
+              </Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cancelButton}

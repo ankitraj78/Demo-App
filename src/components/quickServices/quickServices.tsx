@@ -53,10 +53,11 @@ const actionItems: QuickActionItem[] = [
     bgColor: colors.pinkBg,
   },
   {
-    icon: 'smartphone',
-    label: 'Top-up',
+    icon: 'swap-horiz',
+    label: 'Transfer',
     color: colors.cyan,
     bgColor: colors.cyanBg,
+    screen: 'MakeTransfer',
   },
   {
     icon: 'qr-code-scanner',
@@ -65,7 +66,7 @@ const actionItems: QuickActionItem[] = [
     bgColor: colors.indigoBg,
   },
   {
-    icon: 'help-center',
+    icon: 'headset-mic',
     label: 'Support',
     color: colors.amber,
     bgColor: colors.amberBg,

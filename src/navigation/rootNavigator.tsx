@@ -41,6 +41,7 @@ export type RootStackParamList = {
     toAccountType: number;
     amount: string;
     remarks: string;
+    isSelfTransfer?: boolean;
   };
   MakePayment: {
     loanName: string;
@@ -77,6 +78,7 @@ export type RootStackParamList = {
     name: string;
     office: string;
     accountType: string;
+    accountTypeId: number;
     accountNumber: string;
     dailyLimit: string;
   };

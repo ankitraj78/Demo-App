@@ -32,15 +32,18 @@ export default function MakePaymentScreen() {
   const route = useRoute<MakePaymentRouteProp>();
   const { loanName, loanAccountNumber } = route.params;
 
+  // Self-transfer template (no type=tpt) returns the current client's own accounts
   const { fromAccounts, toAccounts, loading, error } = useTransferTemplate();
 
-  // "Pay To" = loan accounts from toAccountOptions
+  // "Pay To" = only loan accounts from toAccountOptions
   const loanOptions: DropdownOption[] = useMemo(
     () =>
-      toAccounts.map(acc => ({
-        label: acc.clientName ?? acc.accountType?.value ?? 'Loan',
-        value: acc.accountNo ?? '',
-      })),
+      toAccounts
+        .filter(acc => acc.accountType?.value === 'Loan Account')
+        .map(acc => ({
+          label: acc.accountNo ?? '',
+          value: acc.accountNo ?? '',
+        })),
     [toAccounts],
   );
 
@@ -62,16 +65,6 @@ export default function MakePaymentScreen() {
   const selectedToAccount = toAccounts.find(
     acc => acc.accountNo === selectedLoan,
   );
-
-  // If the loanAccountNumber from route doesn't match any option, auto-select the first
-  React.useEffect(() => {
-    if (
-      loanOptions.length > 0 &&
-      !loanOptions.find(o => o.value === selectedLoan)
-    ) {
-      setSelectedLoan(loanOptions[0].value);
-    }
-  }, [loanOptions, selectedLoan]);
 
   const selectedLoanLabel =
     loanOptions.find(l => l.value === selectedLoan)?.label ??
@@ -117,6 +110,7 @@ export default function MakePaymentScreen() {
       toAccountType: selectedToAccount.accountType?.id ?? 1,
       amount,
       remarks,
+      isSelfTransfer: true,
     });
   };
 
@@ -163,7 +157,7 @@ export default function MakePaymentScreen() {
           fieldLabel="Loan Account"
           options={loanOptions}
           selectedValue={selectedLoan}
-          displayText={`${selectedLoanLabel} (${selectedLoan})`}
+          displayText={selectedLoan}
           isOpen={showDropdown}
           onToggle={() => setShowDropdown(!showDropdown)}
           onSelect={selectLoan}

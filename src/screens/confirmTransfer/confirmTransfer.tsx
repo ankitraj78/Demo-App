@@ -18,7 +18,7 @@ import type { RootStackParamList } from '../../navigation/rootNavigator';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DetailsCard from '../../components/detailsCard/detailsCard';
 
-import { makeThirdPartyTransfer } from '../../services/transferService';
+import { makeThirdPartyTransfer, makeSelfTransfer } from '../../services/transferService';
 
 type ConfirmTransferRouteProp = RouteProp<
   RootStackParamList,
@@ -79,6 +79,7 @@ export default function ConfirmTransferScreen() {
     toAccountType,
     amount,
     remarks,
+    isSelfTransfer,
   } = route.params;
 
   const [submitting, setSubmitting] = useState(false);
@@ -87,27 +88,34 @@ export default function ConfirmTransferScreen() {
 
   const handleConfirm = async () => {
     setSubmitting(true);
+    const payload = {
+      fromOfficeId,
+      fromClientId,
+      fromAccountType,
+      fromAccountId: fromAccountNo,
+      toOfficeId,
+      toClientId,
+      toAccountType,
+      toAccountId: toAccountNo,
+      transferAmount: parseFloat(amount) || 0,
+      transferDescription: remarks || '',
+      transferDate,
+      dateFormat: 'dd MMMM yyyy',
+      locale: 'en',
+    };
+    console.log('[ConfirmTransfer] Payload:', JSON.stringify(payload, null, 2));
+    console.log('[ConfirmTransfer] isSelfTransfer:', isSelfTransfer);
     try {
-      await makeThirdPartyTransfer({
-        fromOfficeId,
-        fromClientId,
-        fromAccountType,
-        fromAccountId: fromAccountNo,
-        toOfficeId,
-        toClientId,
-        toAccountType,
-        toAccountId: toAccountNo,
-        transferAmount: parseFloat(amount) || 0,
-        transferDescription: remarks || '',
-        transferDate,
-        dateFormat: 'dd MMMM yyyy',
-        locale: 'en',
-      });
+      const result = isSelfTransfer
+        ? await makeSelfTransfer(payload)
+        : await makeThirdPartyTransfer(payload);
+      console.log('[ConfirmTransfer] Response:', JSON.stringify(result, null, 2));
       navigation.navigate('TransactionAuth', {
         amount: `$${parseFloat(amount).toFixed(2)}`,
         recipientName: toAccountName,
       });
     } catch (err) {
+      console.log('[ConfirmTransfer] Error:', err);
       Alert.alert(
         'Transfer Failed',
         err instanceof Error ? err.message : 'Something went wrong',

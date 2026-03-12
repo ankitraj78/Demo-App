@@ -14,6 +14,17 @@ export const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
 
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: fontSize.md,
+    color: colors.error,
+    textAlign: 'center',
+    paddingHorizontal: spacing.xl,
+  },
   content: {
     flex: 1,
   },

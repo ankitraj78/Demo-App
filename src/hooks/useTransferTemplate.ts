@@ -10,7 +10,7 @@ type UseTransferTemplateResult = {
   refetch: () => void;
 };
 
-export function useTransferTemplate(): UseTransferTemplateResult {
+export function useTransferTemplate(type?: 'tpt'): UseTransferTemplateResult {
   const [fromAccounts, setFromAccounts] = useState<AccountOption[]>([]);
   const [toAccounts, setToAccounts] = useState<AccountOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,8 +20,12 @@ export function useTransferTemplate(): UseTransferTemplateResult {
     setLoading(true);
     setError(null);
     try {
-      const template = await fetchTransferTemplate();
-      setFromAccounts(template.fromAccountOptions ?? []);
+      const template = await fetchTransferTemplate(type);
+      // Only show savings accounts in "Pay From" (accountType id 2 = Savings)
+      const savingsOnly = (template.fromAccountOptions ?? []).filter(
+        acc => acc.accountType?.id === 2,
+      );
+      setFromAccounts(savingsOnly);
       setToAccounts(template.toAccountOptions ?? []);
     } catch (err) {
       setError(
@@ -30,7 +34,7 @@ export function useTransferTemplate(): UseTransferTemplateResult {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     loadTemplate();

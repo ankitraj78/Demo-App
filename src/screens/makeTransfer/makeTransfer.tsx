@@ -28,7 +28,7 @@ export default function MakeTransferScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const { fromAccounts, toAccounts, loading, error, refetch } =
-    useTransferTemplate();
+    useTransferTemplate('tpt');
 
   const [selectedFromIndex, setSelectedFromIndex] = useState(0);
   const [showFromDropdown, setShowFromDropdown] = useState(false);
@@ -191,6 +191,7 @@ export default function MakeTransferScreen() {
             title="Pay To"
             actionLabel="Add Beneficiary!"
             actionIcon="person-add"
+            onActionPress={() => navigation.navigate('AddBeneficiary')}
           />
 
           <DropdownSelect

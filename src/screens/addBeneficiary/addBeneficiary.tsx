@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { View, ScrollView, StatusBar } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View, ScrollView, StatusBar, ActivityIndicator, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { colors, spacing } from '../../theme';
+import type { RootStackParamList } from '../../navigation/rootNavigator';
 import { styles } from './addBeneficiary.styles';
 import ScreenHeader from '../../components/screenHeader/screenHeader';
 import DropdownSelect from '../../components/dropdownSelect/dropdownSelect';
@@ -11,17 +13,24 @@ import StickyFooter from '../../components/stickyFooter/stickyFooter';
 import QrBanner from '../../components/qrBanner/qrBanner';
 import FormTextField from '../../components/formTextField/formTextField';
 import FormAmountField from '../../components/formAmountField/formAmountField';
-
-const accountTypeOptions: DropdownOption[] = [
-  { label: 'Savings Account', value: 'savings' },
-  { label: 'Current Account', value: 'current' },
-  { label: 'Business Account', value: 'business' },
-  { label: 'Fixed Deposit', value: 'fixed' },
-];
+import { useBeneficiaryData } from '../../hooks/useBeneficiaryData';
 
 export default function AddBeneficiaryScreen() {
   const insets = useSafeAreaInsets();
-  const navigation = useNavigation();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const { accountTypeOptions: apiAccountTypes, loading, error } =
+    useBeneficiaryData();
+
+  const accountTypeOptions: DropdownOption[] = useMemo(
+    () =>
+      apiAccountTypes.map(opt => ({
+        label: opt.value ?? 'Unknown',
+        value: String(opt.id ?? ''),
+      })),
+    [apiAccountTypes],
+  );
 
   const [beneficiaryName, setBeneficiaryName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
@@ -38,6 +47,28 @@ export default function AddBeneficiaryScreen() {
     setAccountType(value);
     setShowAccountTypeDropdown(false);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.root}>
+        <ScreenHeader title="Add Beneficiary" backgroundColor={colors.white} />
+        <View style={styles.centerContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.root}>
+        <ScreenHeader title="Add Beneficiary" backgroundColor={colors.white} />
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -107,7 +138,16 @@ export default function AddBeneficiaryScreen() {
         buttonLabel="Submit Beneficiary"
         iconName="arrow-forward"
         note="By adding, you agree to our electronic transfer terms."
-        onPress={() => navigation.goBack()}
+        onPress={() =>
+          navigation.navigate('ConfirmBeneficiary', {
+            name: beneficiaryName,
+            office: branchName,
+            accountType: selectedAccountTypeLabel,
+            accountTypeId: parseInt(accountType, 10) || 0,
+            accountNumber,
+            dailyLimit: transferLimit ? `$${transferLimit}` : '$0.00',
+          })
+        }
         paddingBottom={insets.bottom + spacing.xl}
       />
     </View>
